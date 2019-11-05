@@ -43,3 +43,9 @@
 {
     border: solid 1px red;
 }
+
+.settingsButton:hover
+{
+    border: solid 1px green;
+    cursor: pointer;
+}
