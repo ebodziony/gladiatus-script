@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name         Gladiatus Script
 // @namespace    http://tampermonkey.net/
-// @version      0.92
+// @version      1.0
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
 // @exclude      *://*.gladiatus.gameforge.com/game/index.php?mod=start
-// @grant        none
+// @grant        GM_addStyle
+// @grant        GM_getResourceText
+// @resource     customCSS_style  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/style.css?ver=1
 // ==/UserScript==
 
 
@@ -87,6 +89,10 @@
 
     //dodać function getConfig , nie porównywać typu, sessionstorage zwraca zawsze string "true"
 
+    var test = function() {
+        console.log("to jest test")
+    }
+
 
     /****************
     *   Interface   *
@@ -130,7 +136,7 @@
         var settingsWindow = document.createElement("div");
             settingsWindow.setAttribute("id", "settingsWindow")
             settingsWindow.setAttribute("style", "height: 311px; width: 558px; padding: 50px 30px; background-image: url('https://i.imgur.com/3o9UhOm.png'); display: block; position: absolute; left: 375px; top: 150px; z-index: 999; color: #612d04; font: 600 16px Arial;" );
-            settingsWindow.innerHTML = '<span style="position: absolute; top: 20px; left: 530px; display: block; font-weight: 400; font-size: 12px;">v. '+scriptVersion+'</span><span style="display: block; padding-top: 20px; letter-spacing: 2px;">Gladiatus Script Settings</span>';
+            settingsWindow.innerHTML = '<span style="position: absolute; top: 20px; left: 530px; display: block; font-weight: 400; font-size: 12px; margin-bottom: 30px;">v. '+scriptVersion+'</span><span style="display: block; padding-top: 20px; letter-spacing: 2px;">Gladiatus Script Settings</span><div style="display: grid;  margin-top: 30px; grid-template-columns: 25% 18.75% 18.75% 18.75% 18.75%; width: 100%;"><span>Wyprawa:</span><div id="monsterId0" class="settingsButton"></div><div id="monsterId1" class="menuitem"></div><div id="monsterId2" class="settingsButton"></div><div id="monsterId3" class="settingsButton"></div></div>';
         document.getElementById("header_game").insertBefore(settingsWindow, document.getElementById("header_game").children[0]);
 
         var overlayBack = document.createElement("div");
@@ -226,12 +232,12 @@
                     document.getElementsByClassName("cooldown_bar_link")[0].click();
                 }
 
-                //else if sprawdź czy id regionu się zgadza {if false wybierz region ze zgodnym id, 
+                //else if sprawdź czy id regionu się zgadza {if false wybierz region ze zgodnym id,
                 //selectedExpedition
                 //else użyj funkcji attack}
                 //document.getElementById("submenu2").getElementsByTagName("a")[1].getAttribute("href").contains("location&loc="+locationId);
 
-                else { 
+                else {
                     document.getElementsByClassName("expedition_button")[monsterId].click();
                 };
             };
@@ -301,7 +307,7 @@
                         document.getElementsByTagName("td")[1].firstElementChild.click();
                     }
 
-                    else { 
+                    else {
                         var levels = new Array();
                         levels[0] = Number(document.getElementById("own2").getElementsByTagName("td")[1].firstChild.nodeValue)
                         levels[1] = Number(document.getElementById("own2").getElementsByTagName("td")[5].firstChild.nodeValue)
@@ -317,7 +323,7 @@
                                 index = i;
                             }
                         };
-                
+
                         document.getElementsByClassName("attack")[index].click();
                     }
                 }
@@ -350,7 +356,7 @@
                         document.getElementsByTagName("td")[3].firstElementChild.click();
                     }
 
-                    else { 
+                    else {
                         var levels = new Array();
                         levels[0] = Number(document.getElementById("own3").getElementsByTagName("td")[1].firstChild.nodeValue)
                         levels[1] = Number(document.getElementById("own3").getElementsByTagName("td")[5].firstChild.nodeValue)
@@ -450,9 +456,9 @@
                     var ms = Number(t.split(':')[0]) * 60 * 60 * 1000 + Number(t.split(':')[1]) * 60 * 1000 + Number(t.split(':')[2]) * 1000;
                     return ms;
                 };
-    
+
                 var nextActionTime = new Array();
-    
+
                 if (doExpedition === true) {
                     nextActionTime[0] = convertTimeToMs(document.getElementById("cooldown_bar_text_expedition").innerText);
                 };
@@ -468,7 +474,7 @@
                 if (doEventExpedition === true && freeEventPoints > 0) {
                     nextActionTime[4] = sessionStorage.getItem('eventExpeditionTimer') - actualTime;
                 };
-    
+
                 var index = 0;
                 var minValue = nextActionTime[0];
                 for (var i = 1; i < nextActionTime.length; i++) {
@@ -477,9 +483,9 @@
                         index = i;
                     }
                 };
-    
+
                 var nextActionName;
-    
+
                 if (index === 0) {
                     nextActionName = "Wyprawa";
                 }
@@ -498,7 +504,7 @@
                 else {
                     nextActionName = "Nieznana";
                 };
-    
+
                 var convertTimeToDate = function(timeInMs) {
                     var timeInSecs = timeInMs / 1000;
                     timeInSecs = Math.round(timeInSecs);
@@ -512,12 +518,12 @@
                         mins = "0" + mins;
                     };
                     var hrs = (timeInSecs - mins) / 60;
-    
+
                     return hrs + ':' + mins + ':' + secs;
                 };
-    
+
                 var nextActionWindow = document.createElement("div");
-    
+
                 var showNextActionWindow = function() {
                     nextActionWindow.setAttribute("id", "nextActionWindow")
                     nextActionWindow.setAttribute("style", "height: 72px; width: 365px; padding-top: 13px; color: #58ffbb; font-size: 20px; background-color: #000000aa; border-radius: 15px; display: block; position: absolute; left: 506px; top: 120px; z-index: 999;" );
@@ -525,12 +531,12 @@
                     document.getElementById("header_game").insertBefore(nextActionWindow, document.getElementById("header_game").children[0]);
                 };
                 showNextActionWindow();
-    
+
                 nextActionCounter = setInterval(function() {
                     nextActionTime[index] = nextActionTime[index]-1000;
-    
+
                     nextActionWindow.innerHTML = '<span style="color: #fff;">Następna akcja: </span><span>' + nextActionName + '</span></br><span style="color: #fff;">Za: </span><span>' + convertTimeToDate(nextActionTime[index]) + '</span>';
-    
+
                     if (nextActionTime[index]<=0) {
                         if (index === 4) {
                             document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
