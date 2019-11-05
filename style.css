@@ -12,3 +12,8 @@
     color: #612d04;
     font: 600 16px Arial;
 }
+
+.settingsButton
+{
+    background-color: red;
+}
