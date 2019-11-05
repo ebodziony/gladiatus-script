@@ -13,6 +13,32 @@
     font: 600 16px Arial;
 }
 
+#settingsVersion
+{
+    position: absolute;
+    top: 20px;
+    left: 530px;
+    display: block;
+    font-weight: 400;
+    font-size: 12px;
+    margin-bottom: 30px;
+}
+
+#settingsHeader
+{
+    display: block;
+    padding-top: 20px;
+    letter-spacing: 2px;
+}
+
+#settingsContent
+{
+    display: grid;
+    margin-top: 30px;
+    grid-template-columns: 25% 18.75% 18.75% 18.75% 18.75%;
+    width: 100%;
+}
+
 .settingsButton
 {
     background-color: red;
