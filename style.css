@@ -1,0 +1,14 @@
+#settingsWindow
+{
+    height: 311px;
+    width: 558px;
+    padding: 50px 30px;
+    background-image: url('https://i.imgur.com/3o9UhOm.png');
+    display: block;
+    position: absolute;
+    left: 375px;
+    top: 150px;
+    z-index: 999;
+    color: #612d04;
+    font: 600 16px Arial;
+}
