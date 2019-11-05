@@ -35,17 +35,36 @@
 {
     display: grid;
     margin-top: 30px;
-    grid-template-columns: 25% 8% 8% 8% 8%;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 150px 100px;
     width: 100%;
 }
 
 .settingsButton
 {
-    border: solid 1px red;
+    border: solid 1px rgb(97, 45, 4);
+    height: 25px;
+    width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
 }
 
 .settingsButton:hover
 {
-    border: solid 1px green;
+    border: solid 1px rgb(0, 196, 0);
+    color: rgb(0, 196, 0);
     cursor: pointer;
+}
+
+#overlayBack
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #000;
+    opacity: 0.6;
+    z-index: 900;
 }
