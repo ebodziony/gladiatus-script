@@ -1,3 +1,16 @@
+#autoGoButton
+{
+    height: 27px;
+    width: 150px;
+    margin-right: 2px;
+    cursor: pointer;
+    border: none;
+    color: #58ffbb;
+    float: left;
+    background-image: url('https://i.imgur.com/20OoeBD.png')
+}
+
+
 #settingsWindow
 {
     height: 311px;
@@ -68,3 +81,4 @@
     opacity: 0.6;
     z-index: 900;
 }
+
