@@ -35,12 +35,11 @@
 {
     display: grid;
     margin-top: 30px;
-    grid-template-columns: 25% 18.75% 18.75% 18.75% 18.75%;
+    grid-template-columns: 25% 8% 8% 8% 8%;
     width: 100%;
 }
 
 .settingsButton
 {
-    background-color: red;
     border: solid 1px red;
 }
