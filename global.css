@@ -71,7 +71,12 @@
     justify-content: center;
     font-weight: 400;
     margin: 0px 3px;
-    border-radius: 7px;
+    border-radius: 5px;
+    box-shadow: 0 0 0 1px #8e753f;
+    font-size: 14px;
+    background: #390301;
+    background: -moz-linear-gradient(top,#c3ab6f,#886933);
+    background: linear-gradient(to bottom,#c3ab6f,#886933);
 }
 
 .settingsButton:hover
@@ -91,4 +96,3 @@
     opacity: 0.6;
     z-index: 900;
 }
-
