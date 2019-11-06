@@ -49,8 +49,21 @@
     display: grid;
     margin-top: 20px;
     grid-template-columns: 50% 50%;
-    grid-template-rows: 150px 100px;
+    grid-template-rows: 180px 70px;
     width: 100%;
+}
+
+.settingsHeaderBig
+{
+    margin: 3px 0px;
+    padding: 0px 25px;
+}
+
+.settingsHeaderSmall
+{
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 5px;
 }
 
 .settingsSubcontent
