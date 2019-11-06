@@ -47,7 +47,7 @@
 #settingsContent
 {
     display: grid;
-    margin-top: 30px;
+    margin-top: 20px;
     grid-template-columns: 50% 50%;
     grid-template-rows: 150px 100px;
     width: 100%;
@@ -63,7 +63,7 @@
 
 .settingsButton
 {
-    border: solid 1px rgb(97, 45, 4);
+    border: solid 1px #e9d2a0;
     height: 25px;
     width: 42px;
     display: flex;
