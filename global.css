@@ -58,14 +58,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 3px;
+    margin: 3px 0px;
+    padding: 0px 25px;
 }
 
 .settingsButton
 {
     border: solid 1px #e9d2a0;
     height: 25px;
-    width: 42px;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
