@@ -53,6 +53,14 @@
     width: 100%;
 }
 
+.settingsSubcontent
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3px;
+}
+
 .settingsButton
 {
     border: solid 1px rgb(97, 45, 4);
@@ -62,6 +70,8 @@
     align-items: center;
     justify-content: center;
     font-weight: 400;
+    margin: 0px 3px;
+    border-radius: 7px;
 }
 
 .settingsButton:hover
