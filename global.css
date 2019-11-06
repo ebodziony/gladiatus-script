@@ -81,10 +81,41 @@
 
 .settingsButton:hover
 {
-    border: solid 1px rgb(0, 196, 0);
-    color: rgb(0, 196, 0);
+    color: #58ffbb;
     cursor: pointer;
+    box-shadow: 0 0 0 1px #58ffbb;
 }
+
+.settingsActive
+{
+    border: solid 1px #58ffbb;
+    color: #58ffbb;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px #58ffbb;
+}
+
+.settingsDeactive
+{
+    border: solid 1px rgb(206, 69, 69);
+    color: rgb(206, 69, 69);
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgb(206, 69, 69);
+}
+
+.settingsDisabled
+{
+    color: #bcbcbc;
+    cursor: default;
+    border-color: #bdbdbd;
+    box-shadow: 0 0 0 1px #1d1d1d;
+    -moz-box-shadow: 0 0 0 1px #1d1d1d;
+    -webkit-box-shadow: 0 0 0 1px #1d1d1d;
+    background: #222;
+    background: -moz-linear-gradient(top,#272727,#121212);
+    background: linear-gradient(to bottom,#272727,#121212);
+}
+
+
 
 #overlayBack
 {
