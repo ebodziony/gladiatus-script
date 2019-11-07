@@ -94,27 +94,17 @@
 
 .settingsButton:hover
 {
-    /* color: #58ffbb;
+    color: #58ffbb;
     cursor: pointer;
-    box-shadow: 0 0 0 1px #58ffbb; */
-    color: #e8d335;
-    cursor: pointer;
-    box-shadow: 0 0 0 1px #e8d335;
-    border: solid 1px #e8d335;
+    box-shadow: 0 0 0 1px #58ffbb;
 }
 
 .settingsActive
 {
-    /* border: solid 1px #58ffbb;
-    color: #58ffbb;
-    cursor: pointer; */
-
-    /* box-shadow: 0 0 0 1px #58ffbb; */
-
-    border: solid 1px #e8d335;
-    color: #e8d335;
+    border: solid 1px #58ffbb;
+    /* color: #58ffbb; */
     cursor: pointer;
-    /* box-shadow: 0 0 0 1px #e8d335;
+    /* box-shadow: 0 0 0 1px #58ffbb; */
 }
 
 .settingsDeactive
