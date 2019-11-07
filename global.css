@@ -94,25 +94,26 @@
 
 .settingsButton:hover
 {
-    color: #58ffbb;
+    /* color: #58ffbb; */
     cursor: pointer;
-    box-shadow: 0 0 0 1px #58ffbb;
+    /* box-shadow: 0 0 0 1px #58ffbb; */
+    background: linear-gradient(to bottom, #C3AB6F, #DACFA2);
 }
 
 .settingsActive
 {
-    border: solid 1px #58ffbb;
+    border: solid 1px #44dc46;
     /* color: #58ffbb; */
     cursor: pointer;
-    /* box-shadow: 0 0 0 1px #58ffbb; */
+    /* box-shadow: 0 0 0 1px #44dc46; */
 }
 
 .settingsDeactive
 {
-    border: solid 1px rgb(206, 69, 69);
-    color: rgb(206, 69, 69);
+    border: solid 1px rgb(234, 20, 20);
+    /* color: rgb(206, 69, 69); */
     cursor: pointer;
-    box-shadow: 0 0 0 1px rgb(206, 69, 69);
+    /* box-shadow: 0 0 0 1px rgb(234, 20, 20); */
 }
 
 .settingsDisabled
