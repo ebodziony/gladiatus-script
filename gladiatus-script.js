@@ -144,7 +144,6 @@
         if (document.getElementById("nextActionWindow") !== null) {
             document.getElementById("nextActionWindow").remove();
         };
-        //clearInterval(zmienić funkcje anonimowe dla każdej akcji na nazwane i tu wkleić);
 
     };
 
@@ -430,9 +429,6 @@
                     document.getElementsByClassName("cooldown_bar_link")[0].click();
                 }
 
-                //else if sprawdź czy id regionu się zgadza {if false wybierz region ze zgodnym id, 
-                //selectedExpedition
-                //else użyj funkcji attack}
                 //document.getElementById("submenu2").getElementsByTagName("a")[1].getAttribute("href").contains("location&loc="+locationId);
 
                 else { 
@@ -606,7 +602,7 @@
 
                     if (eventMonsterId == 3 && freeEventPoints == 1 ) {
                         sessionStorage.setItem('freeEventPoints', 0);
-                        sessionStorage.setItem('eventExpeditionTimer', actualTime+301000); //dadać tyle żeby dało 00:00 nast dnia
+                        sessionStorage.setItem('eventExpeditionTimer', actualTime+301000);
                         document.getElementsByClassName("expedition_button")[2].click();
                     }
 
@@ -627,7 +623,6 @@
                 else {
                     //document.getElementById("content").getElementsByClassName("section-header")[1].getElementsByTagName("span")[0].firstChild.nodeValue.replace(/[^:0-9]/gi, '')
                     sessionStorage.setItem('eventExpeditionTimer', actualTime+300000); //sprawdzam czy załadował się czas
-                    //zamiast 5min na sztywno napisać funkcję która przerobi pobrany string na czas i go doda do actualDate
                     location.reload();
                 };
             };
@@ -767,21 +762,6 @@
 
 
 /*
-
-else 4 colldownbary = nieaktywne
-    {
-        na dolu komunikatu button PRZERWIJ AUTO GO
-    }
-
-    wybierz przeciwnika - pobiera id wyprawy, nazwe wyprawy, id przeciwnika i nazwe przeciwnika, pozniej albo zapisuje to w cache, albo na serwerze
-
-    HUD:
-
-    settings - którego przeciwnika chcesz atakować: 1, 2, 3, boss
-        który region: pobrać je i wyświetlić użytkownikowi
-        wybrane lochy: jw - region + normalne/zaawansowane  
-
-
 
 DO DODANIA:
 -LECZENIE
