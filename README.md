@@ -10,6 +10,7 @@
   - Turn on/off every activity
   - Choose an expedition opponent
   - Choose an dungeon difficulty
+  - Set language (English/Polish)
   
 Installation:
 ---------

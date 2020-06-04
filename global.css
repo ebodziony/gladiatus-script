@@ -26,15 +26,22 @@
     font: 600 16px Arial;
 }
 
-#settingsVersion
+#settingsLanguage
 {
     position: absolute;
     top: 20px;
-    left: 530px;
+    right: 62px;
     display: block;
     font-weight: 400;
     font-size: 12px;
     margin-bottom: 30px;
+    cursor: default;
+}
+
+#settingsLanguage img
+{
+    cursor: pointer;
+    border: 1px solid #612d04;
 }
 
 #settingsHeader

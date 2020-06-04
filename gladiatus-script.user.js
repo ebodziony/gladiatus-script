@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      1.9
+// @version      2.0
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -9,6 +9,7 @@
 // @updateURL    https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.js
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
+// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
 // @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=1.9
 // ==/UserScript==
 
@@ -120,6 +121,58 @@
         freeEventPoints = 0;
     };
 
+    /*****************
+    *  Translations  *
+    *****************/
+
+    const contentEN = {
+        advanced: 'Advanced',
+        arena: 'Arena',
+        circusTurma: 'Circus Turma',
+        difficulty: 'Difficulty',
+        dungeon: 'Dungeon',
+        expedition: 'Expedition',
+        location: 'Location',
+        no: 'No',
+        normal: 'Normal',
+        opponent: 'Opponent',
+        settings: 'Settings',
+        soon: 'Soon...',
+        yes: 'Yes'
+    }
+
+    const contentPL = {
+        advanced: 'Zaawansowane',
+        arena: 'Arena',
+        circusTurma: 'Circus Turma',
+        difficulty: 'Trudność',
+        dungeon: 'Lochy',
+        expedition: 'Wyprawa',
+        location: 'Lokacja',
+        no: 'Nie',
+        normal: 'Normalne',
+        opponent: 'Przeciwnik',
+        settings: 'Ustawienia',
+        soon: 'Wkrótce...',
+        yes: 'Tak'
+    }
+
+    let content;
+
+    const language = localStorage.getItem('settings.language')
+
+    switch (language) {
+        case 'EN':
+            content = { ...contentEN }
+            break;
+        case 'PL':
+            content = { ...contentPL }
+            break;
+        default:
+            content = { ...contentEN }
+    }
+
+
     /****************
     *   Interface   *
     ****************/
@@ -158,7 +211,65 @@
 
         var settingsWindow = document.createElement("div");
             settingsWindow.setAttribute("id", "settingsWindow")
-            settingsWindow.innerHTML = '<span id="settingsVersion">v. '+scriptVersion+'</span><span id="settingsHeader">Ustawienia</span><div id="settingsContent"><div><div class="settingsHeaderBig">Wyprawa</div><div class="settingsSubcontent"><div id="doExpeditionTrue" class="settingsButton">Tak</div><div id="doExpeditionFalse" class="settingsButton">Nie</div></div><div class="settingsHeaderSmall">Przeciwnik</div><div class="settingsSubcontent"><div id="setMonsterId0" class="settingsButton">1</div><div id="setMonsterId1" class="settingsButton">2</div><div id="setMonsterId2" class="settingsButton">3</div><div id="setMonsterId3" class="settingsButton">Boss</div></div><div class="settingsHeaderSmall">Lokacja</div><div class="settingsSubcontent"><div id="zzz" class="settingsButton">Wkrótce...</div></div></div><div><div class="settingsHeaderBig">Lochy</div><div class="settingsSubcontent"><div id="doDungeonTrue" class="settingsButton">Tak</div><div id="doDungeonFalse" class="settingsButton">Nie</div></div><div class="settingsHeaderSmall">Trudność</div><div class="settingsSubcontent"><div id="setDungeonDifficultyNormalne" class="settingsButton">Normalne</div><div id="setDungeonDifficultyZaawansowane" class="settingsButton">Zaawansowane</div></div><div class="settingsHeaderSmall">Lokacja</div><div class="settingsSubcontent"><div id="dungeonLocation" class="settingsButton">Wkrótce...</div></div></div><div><div class="settingsHeaderBig">Arena</div><div class="settingsSubcontent"><div id="doArenaTrue" class="settingsButton">Tak</div><div id="doArenaFalse" class="settingsButton">Nie</div></div></div><div><div class="settingsHeaderBig">Circus Turma</div><div class="settingsSubcontent"><div id="doCircusTrue" class="settingsButton">Tak</div><div id="doCircusFalse" class="settingsButton">Nie</div></div></div></div>';
+            settingsWindow.innerHTML = `
+                <span id="settingsLanguage">
+                    <img id="languageEN" src="https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/GB.png">
+                    <img id="languagePL" src="https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/PL.png">
+                </span>
+                <span id="settingsHeader">${content.settings}</span>
+                <div id="settingsContent">
+                    <div>
+                        <div class="settingsHeaderBig">${content.expedition}</div>
+                        <div class="settingsSubcontent">
+                            <div id="doExpeditionTrue" class="settingsButton">${content.yes}</div>
+                            <div id="doExpeditionFalse" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.opponent}</div>
+                        <div class="settingsSubcontent">
+                            <div id="setMonsterId0" class="settingsButton">1</div>
+                            <div id="setMonsterId1" class="settingsButton">2</div>
+                            <div id="setMonsterId2" class="settingsButton">3</div>
+                            <div id="setMonsterId3" class="settingsButton">Boss</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.location}</div>
+                        <div class="settingsSubcontent">
+                            <div id="zzz" class="settingsButton">${content.soon}</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="settingsHeaderBig">${content.dungeon}</div>
+                        <div class="settingsSubcontent">
+                            <div id="doDungeonTrue" class="settingsButton">${content.yes}</div>
+                            <div id="doDungeonFalse" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.difficulty}</div>
+                        <div class="settingsSubcontent">
+                            <div id="setDungeonDifficultyNormalne" class="settingsButton">${content.normal}</div>
+                            <div id="setDungeonDifficultyZaawansowane" class="settingsButton">${content.advanced}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.location}</div>
+                        <div class="settingsSubcontent">
+                            <div id="dungeonLocation" class="settingsButton">${content.soon}</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="settingsHeaderBig">${content.arena}</div>
+                        <div class="settingsSubcontent">
+                            <div id="doArenaTrue" class="settingsButton">${content.yes}</div>
+                            <div id="doArenaFalse" class="settingsButton">${content.no}</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="settingsHeaderBig">${content.circusTurma}</div>
+                        <div class="settingsSubcontent">
+                            <div id="doCircusTrue" class="settingsButton">${content.yes}</div>
+                            <div id="doCircusFalse" class="settingsButton">${content.no}</div>
+                        </div>
+                    </div>
+                </div>`;
         document.getElementById("header_game").insertBefore(settingsWindow, document.getElementById("header_game").children[0]);
 
         var overlayBack = document.createElement("div");
@@ -168,111 +279,88 @@
             overlayBack.addEventListener ("click", closeSettings);
         document.getElementsByTagName("body")[0].appendChild(overlayBack);
 
+        //Set Language
+
+        const setLanguage = function(language) {
+            localStorage.setItem('settings.language', language)
+            console.log(`set ${language}`)
+
+            switch (language) {
+                case 'EN':
+                    content = { ...contentEN }
+                    break;
+                case 'PL':
+                    content = { ...contentPL }
+                    break;
+                default:
+                    content = { ...contentEN }
+            }
+
+            closeSettings();
+            openSettings();
+        };
+
+        $("#languageEN").click(function() { setLanguage('EN') });
+        $("#languagePL").click(function() { setLanguage('PL') });
+
+
         //Change Settings
 
-        var setExpeditionTrue = function() {
-            doExpedition = true;
-            localStorage.setItem('doExpedition', true);
+        const setDoExpedition = function(bool) {
+            doExpedition = bool;
+            localStorage.setItem('doExpedition', bool);
             setActiveButtons();
         };
 
-        var setExpeditionFalse = function() {
-            doExpedition = false;
-            localStorage.setItem('doExpedition', false);
+        $("#doExpeditionTrue").click(function() { setDoExpedition(true) });
+        $("#doExpeditionFalse").click(function() { setDoExpedition(false) });
+
+        const setMonster = function(id) {
+            monsterId = id;
+            localStorage.setItem('monsterId', id);
             setActiveButtons();
         };
 
-        var setMonsterId0 = function() {
-            monsterId = "0";
-            localStorage.setItem('monsterId', "0");
+        $("#setMonsterId0").click(function() { setMonster('0') });
+        $("#setMonsterId1").click(function() { setMonster('1') });
+        $("#setMonsterId2").click(function() { setMonster('2') });
+        $("#setMonsterId3").click(function() { setMonster('3') });
+
+        const setDoDungeon = function(bool) {
+            doDungeon = bool;
+            localStorage.setItem('doDungeon', bool);
             setActiveButtons();
         };
 
-        var setMonsterId1 = function() {
-            monsterId = "1";
-            localStorage.setItem('monsterId', "1");
+        $("#doDungeonTrue").click(function() { setDoDungeon(true) });
+        $("#doDungeonFalse").click(function() { setDoDungeon(false) });
+
+        const setDungeonDifficulty = function(difficulty) {
+            dungeonDifficulty = difficulty;
+            localStorage.setItem('dungeonDifficulty', difficulty);
             setActiveButtons();
         };
 
-        var setMonsterId2 = function() {
-            monsterId = "2";
-            localStorage.setItem('monsterId', "2");
+        $("#setDungeonDifficultyNormalne").click(function() { setDungeonDifficulty("normalne") });
+        $("#setDungeonDifficultyZaawansowane").click(function() { setDungeonDifficulty("zaawansowane") });
+
+        const setDoArena = function(bool) {
+            doArena = bool;
+            localStorage.setItem('doArena', bool);
             setActiveButtons();
         };
 
-        var setMonsterId3 = function() {
-            monsterId = "3";
-            localStorage.setItem('monsterId', "3");
+        $("#doArenaTrue").click(function() { setDoArena(true) });
+        $("#doArenaFalse").click(function() { setDoArena(false) });
+
+        const setDoCircus = function(bool) {
+            doCircus = bool;
+            localStorage.setItem('doCircus', bool);
             setActiveButtons();
         };
 
-        var setDungeonTrue = function() {
-            doDungeon = true;
-            localStorage.setItem('doDungeon', true);
-            setActiveButtons();
-        };
-
-        var setDungeonFalse = function() {
-            doDungeon = false;
-            localStorage.setItem('doDungeon', false);
-            setActiveButtons();
-        };
-
-        var setDungeonDifficultyNormalne = function() {
-            dungeonDifficulty = "normalne";
-            localStorage.setItem('dungeonDifficulty', "normalne");
-            setActiveButtons();
-        };
-
-        var setDungeonDifficultyZaawansowane = function() {
-            dungeonDifficulty = "zaawansowane";
-            localStorage.setItem('dungeonDifficulty', "zaawansowane");
-            setActiveButtons();
-        };
-
-        var setArenaTrue = function() {
-            doArena = true;
-            localStorage.setItem('doArena', true);
-            setActiveButtons();
-        };
-
-        var setArenaFalse = function() {
-            doArena = false;
-            localStorage.setItem('doArena', false);
-            setActiveButtons();
-        };
-
-        var setCircusTrue = function() {
-            doCircus = true;
-            localStorage.setItem('doCircus', true);
-            setActiveButtons();
-        };
-
-        var setCircusFalse = function() {
-            doCircus = false;
-            localStorage.setItem('doCircus', false);
-            setActiveButtons();
-        };
-
-        document.getElementById("doExpeditionTrue").addEventListener ("click", setExpeditionTrue);
-        document.getElementById("doExpeditionFalse").addEventListener ("click", setExpeditionFalse);
-
-        document.getElementById("setMonsterId0").addEventListener ("click", setMonsterId0);
-        document.getElementById("setMonsterId1").addEventListener ("click", setMonsterId1);
-        document.getElementById("setMonsterId2").addEventListener ("click", setMonsterId2);
-        document.getElementById("setMonsterId3").addEventListener ("click", setMonsterId3);
-
-        document.getElementById("doDungeonTrue").addEventListener ("click", setDungeonTrue);
-        document.getElementById("doDungeonFalse").addEventListener ("click", setDungeonFalse);
-
-        document.getElementById("setDungeonDifficultyNormalne").addEventListener ("click", setDungeonDifficultyNormalne);
-        document.getElementById("setDungeonDifficultyZaawansowane").addEventListener ("click", setDungeonDifficultyZaawansowane);
-
-        document.getElementById("doArenaTrue").addEventListener ("click", setArenaTrue);
-        document.getElementById("doArenaFalse").addEventListener ("click", setArenaFalse);
-
-        document.getElementById("doCircusTrue").addEventListener ("click", setCircusTrue);
-        document.getElementById("doCircusFalse").addEventListener ("click", setCircusFalse);
+        $("#doCircusTrue").click(function() { setDoCircus(true) });
+        $("#doCircusFalse").click(function() { setDoCircus(false) });
 
         var setActiveButtons = function() {
             if (doExpedition == true){
@@ -760,13 +848,3 @@
     };
 
 })();
-
-
-/*
-
-DO DODANIA:
--LECZENIE
--AUTOMATYCZNE ZADANIA
--AUTOMATYCZNA LICYTACJA
-
-*/
