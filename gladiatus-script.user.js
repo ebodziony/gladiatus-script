@@ -132,7 +132,9 @@
         difficulty: 'Difficulty',
         dungeon: 'Dungeon',
         expedition: 'Expedition',
+        in: 'In',
         location: 'Location',
+        nextAction: 'Next action',
         no: 'No',
         normal: 'Normal',
         opponent: 'Opponent',
@@ -148,7 +150,9 @@
         difficulty: 'Trudność',
         dungeon: 'Lochy',
         expedition: 'Wyprawa',
+        in: 'Za',
         location: 'Lokacja',
+        nextAction: 'Następna akcja',
         no: 'Nie',
         normal: 'Normalne',
         opponent: 'Przeciwnik',
@@ -283,7 +287,6 @@
 
         const setLanguage = function(language) {
             localStorage.setItem('settings.language', language)
-            console.log(`set ${language}`)
 
             switch (language) {
                 case 'EN':
@@ -478,7 +481,6 @@
         };
 
         var clickDelay = getRandomIntInclusive(900, 2400);
-        console.log(clickDelay);
 
         //Claim Daily Reward
 
@@ -769,22 +771,22 @@
                 var nextActionName;
     
                 if (index === 0) {
-                    nextActionName = "Wyprawa";
+                    nextActionName = content.expedition;
                 }
                 else if (index === 1) {
-                    nextActionName = "Lochy";
+                    nextActionName = content.dungeon;
                 }
                 else if (index === 2) {
-                    nextActionName = "Arena";
+                    nextActionName = content.arena;
                 }
                 else if (index === 3) {
-                    nextActionName = "Circus Turma";
+                    nextActionName = content.circusTurma;
                 }
                 else if (index === 4) {
-                    nextActionName = "Wyprawa Eventowa";
+                    nextActionName = "Event expedition";
                 }
                 else {
-                    nextActionName = "Nieznana";
+                    nextActionName = "Unkown";
                 };
     
                 var convertTimeToDate = function(timeInMs) {
@@ -809,7 +811,7 @@
                 var showNextActionWindow = function() {
                     nextActionWindow.setAttribute("id", "nextActionWindow")
                     nextActionWindow.setAttribute("style", "height: 72px; width: 365px; padding-top: 13px; color: #58ffbb; font-size: 20px; background-color: #000000aa; border-radius: 15px; display: block; position: absolute; left: 506px; top: 120px; z-index: 999;" );
-                    nextActionWindow.innerHTML = '<span style="color: #fff;">Następna akcja: </span><span>' + nextActionName + '</span></br><span style="color: #fff;">Za: </span><span>' + convertTimeToDate(nextActionTime[index]) + '</span>';
+                    nextActionWindow.innerHTML = `<span style="color: #fff;">${content.nextAction}: </span><span>${nextActionName}</span></br><span style="color: #fff;">${content.in}: </span><span>${convertTimeToDate(nextActionTime[index])}</span>`;
                     document.getElementById("header_game").insertBefore(nextActionWindow, document.getElementById("header_game").children[0]);
                 };
                 showNextActionWindow();
@@ -817,7 +819,7 @@
                 nextActionCounter = setInterval(function() {
                     nextActionTime[index] = nextActionTime[index]-1000;
     
-                    nextActionWindow.innerHTML = '<span style="color: #fff;">Następna akcja: </span><span>' + nextActionName + '</span></br><span style="color: #fff;">Za: </span><span>' + convertTimeToDate(nextActionTime[index]) + '</span>';
+                    nextActionWindow.innerHTML = `<span style="color: #fff;">${content.nextAction}: </span><span>${nextActionName}</span></br><span style="color: #fff;">${content.in}: </span><span>${convertTimeToDate(nextActionTime[index])}</span>`;
     
                     if (nextActionTime[index]<=0) {
                         if (index === 4) {
