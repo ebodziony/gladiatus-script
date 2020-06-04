@@ -6,6 +6,8 @@
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
 // @exclude      *://*.gladiatus.gameforge.com/game/index.php?mod=start
+// @downloadURL  https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.js
+// @updateURL    https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.js
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=1.9
