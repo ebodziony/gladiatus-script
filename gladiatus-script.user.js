@@ -1,6 +1,5 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @namespace    http://tampermonkey.net/
 // @version      1.9
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
