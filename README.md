@@ -15,7 +15,7 @@ Installation:
 ---------
 
 1. Install tempermonkey addon: http://tampermonkey.net/
-2. After installation click here: https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.js and press install.
+2. After installation click here: https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.user.js and press install.
 
 To do:
 ---------
