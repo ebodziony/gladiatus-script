@@ -18,6 +18,16 @@ Installation:
 1. Install tampermonkey addon: http://tampermonkey.net/
 2. After installation click here: https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.user.js and press install.
 
+Usage:
+---------
+
+1. Set your configuration.
+2. Press Auto GO
+3. Enjoy
+
+
+![N|Solid](https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/preview.jpg)
+
 To do:
 ---------
   - Using food
