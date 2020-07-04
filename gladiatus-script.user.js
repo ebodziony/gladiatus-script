@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.0
+// @version      2.1
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -21,7 +21,7 @@
 
     function addCustomCSS(){
 
-        var globalCSS = GM_getResourceText("customCSS_global");
+        const globalCSS = GM_getResourceText("customCSS_global");
         GM_addStyle(globalCSS);
 
     }
@@ -31,73 +31,73 @@
     *     Global     *
     *****************/
 
-    var autoGoActive = false;
+    let autoGoActive = false;
     if (sessionStorage.getItem('autoGoActive') !== null){
-        let autoGoActiveText = sessionStorage.getItem('autoGoActive');
-        autoGoActive = autoGoActiveText == "true";
+        autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
     };
 
-    var actualTime = new Date().getTime();
+    const currentTime = new Date().getTime();
 
-    var playerLevel = document.getElementById("header_values_level").firstChild.nodeValue;
+    const playerLevel = $("#header_values_level").first().html()
 
-    var nextActionCounter;
-
-    var scriptVersion = "1.0";
-
-    var healthPoints = Number(document.getElementById("header_values_hp_percent").firstChild.nodeValue.replace(/[^0-9]/gi, ''));
+    const healthPoints = Number(document.getElementById("header_values_hp_percent").firstChild.nodeValue.replace(/[^0-9]/gi, ''));
 
     /*****************
     *     Config     *
     *****************/
 
     //Mode
-    var safeMode = false; //default true
+    let safeMode = false;
+
+    //Quests
+    let doQuests = true;
+    if (localStorage.getItem('doQuests')) {
+        doQuests = localStorage.getItem('doQuests') === "true" ? true : false;
+    }
+    let nextQuestTime = 0;
+    if (localStorage.getItem('nextQuestTime')) {
+        nextQuestTime = Number(localStorage.getItem('nextQuestTime'));
+    }
 
     //Expedition
-    var doExpedition = true;
-    if (localStorage.getItem('doExpedition') !== null){
-        let doExpeditionText = localStorage.getItem('doExpedition');
-        doExpedition = doExpeditionText == "true";
+    let doExpedition = true;
+    if (localStorage.getItem('doExpedition')) {
+        doExpedition = localStorage.getItem('doExpedition') === "true" ? true : false;
     };
-    var locationId = 7;
-    var locationName = "Nie wybrano";
-    var monsterId = 0;
-    if (localStorage.getItem('monsterId') !== null){
-        let monsterIdText = localStorage.getItem('monsterId');
-        monsterId = parseInt(monsterIdText);
+    // let locationId = 0;
+    // let locationName = "Not selected";
+    let monsterId = 0;
+    if (localStorage.getItem('monsterId')) {
+        monsterId = Number(localStorage.getItem('monsterId'));
     };
 
     //Dungeon
-    var doDungeon = true;
-    if (localStorage.getItem('doDungeon') !== null){
-        let doDungeonText = localStorage.getItem('doDungeon');
-        doDungeon = doDungeonText == "true";
+    let doDungeon = true;
+    if (localStorage.getItem('doDungeon')) {
+        doDungeon = localStorage.getItem('doDungeon') === "true" ? true : false;
     };
     if (playerLevel < 10) {
         doDungeon = false;
     };
-    var dungeonId = 0;
-    var dungeonDifficulty = "zaawansowane";
-    if (localStorage.getItem('dungeonDifficulty') !== null){
+    let dungeonId = 0;
+    let dungeonDifficulty = "normalne";
+    if (localStorage.getItem('dungeonDifficulty')) {
         dungeonDifficulty = localStorage.getItem('dungeonDifficulty');
     };
 
     //Arena
-    var doArena = true;
-    if (localStorage.getItem('doArena') !== null){
-        let doArenaText = localStorage.getItem('doArena');
-        doArena = doArenaText == "true";
+    let doArena = true;
+    if (localStorage.getItem('doArena')) {
+        doArena = localStorage.getItem('doArena') === "true" ? true : false;
     };
     if (playerLevel < 2) {
         doArena = false;
     };
 
     //Circus
-    var doCircus = true;
-    if (localStorage.getItem('doCircus') !== null){
-        let doCircusText = localStorage.getItem('doCircus');
-        doCircus = doCircusText == "true";
+    let doCircus = true;
+    if (localStorage.getItem('doCircus')){
+        doCircus = localStorage.getItem('doCircus') === "true" ? true : false;
     };
     if (playerLevel < 10) {
         doCircus = false;
@@ -111,7 +111,7 @@
     var eventMonsterId = 0;
     var eventExpeditionTimerDone = true;
     if (sessionStorage.getItem('eventExpeditionTimer') !== null){
-        eventExpeditionTimerDone = sessionStorage.getItem('eventExpeditionTimer') < actualTime;
+        eventExpeditionTimerDone = sessionStorage.getItem('eventExpeditionTimer') < currentTime;
     };
     var freeEventPoints = 16;
     if (sessionStorage.getItem('freeEventPoints') !== null){
@@ -131,6 +131,7 @@
         circusTurma: 'Circus Turma',
         difficulty: 'Difficulty',
         dungeon: 'Dungeon',
+        eventExpedition: 'Event Expedition',
         expedition: 'Expedition',
         in: 'In',
         location: 'Location',
@@ -138,6 +139,7 @@
         no: 'No',
         normal: 'Normal',
         opponent: 'Opponent',
+        quests: 'Quests',
         settings: 'Settings',
         soon: 'Soon...',
         yes: 'Yes'
@@ -149,6 +151,7 @@
         circusTurma: 'Circus Turma',
         difficulty: 'Trudność',
         dungeon: 'Lochy',
+        eventExpedition: 'Wyprawa Eventowa',
         expedition: 'Wyprawa',
         in: 'Za',
         location: 'Lokacja',
@@ -156,6 +159,7 @@
         no: 'Nie',
         normal: 'Normalne',
         opponent: 'Przeciwnik',
+        quests: 'Zadania',
         settings: 'Ustawienia',
         soon: 'Wkrótce...',
         yes: 'Tak'
@@ -237,7 +241,7 @@
                         </div>
                         <div class="settingsHeaderSmall">${content.location}</div>
                         <div class="settingsSubcontent">
-                            <div id="zzz" class="settingsButton">${content.soon}</div>
+                            <div id="expeditionLocation" class="settingsButton">${content.soon}</div>
                         </div>
                     </div>
 
@@ -271,6 +275,21 @@
                         <div class="settingsSubcontent">
                             <div id="doCircusTrue" class="settingsButton">${content.yes}</div>
                             <div id="doCircusFalse" class="settingsButton">${content.no}</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="settingsHeaderBig">${content.quests}</div>
+                        <div class="settingsSubcontent">
+                            <div id="doQuestsTrue" class="settingsButton">${content.yes}</div>
+                            <div id="doQuestsFalse" class="settingsButton">${content.no}</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="settingsHeaderBig">${content.eventExpedition}</div>
+                        <div class="settingsSubcontent">
+                            <div id="zzz" class="settingsButton">${content.soon}</div>
                         </div>
                     </div>
                 </div>`;
@@ -365,12 +384,20 @@
         $("#doCircusTrue").click(function() { setDoCircus(true) });
         $("#doCircusFalse").click(function() { setDoCircus(false) });
 
+        const setDoQuests = function(bool) {
+            doQuests = bool;
+            localStorage.setItem('doQuests', bool);
+            setActiveButtons();
+        };
+
+        $("#doQuestsTrue").click(function() { setDoQuests(true) });
+        $("#doQuestsFalse").click(function() { setDoQuests(false) });
+
         var setActiveButtons = function() {
             if (doExpedition == true){
                 document.getElementById("doExpeditionTrue").classList.add("settingsActive")
                 document.getElementById("doExpeditionFalse").classList.remove("settingsDeactive")
-            }
-            else {
+            } else {
                 document.getElementById("doExpeditionFalse").classList.add("settingsDeactive")
                 document.getElementById("doExpeditionTrue").classList.remove("settingsActive")
             };
@@ -380,20 +407,17 @@
                 document.getElementById("setMonsterId1").classList.remove("settingsActive")
                 document.getElementById("setMonsterId2").classList.remove("settingsActive")
                 document.getElementById("setMonsterId3").classList.remove("settingsActive")
-            }
-            else if (monsterId == 1){
+            } else if (monsterId == 1){
                 document.getElementById("setMonsterId1").classList.add("settingsActive")
                 document.getElementById("setMonsterId0").classList.remove("settingsActive")
                 document.getElementById("setMonsterId2").classList.remove("settingsActive")
                 document.getElementById("setMonsterId3").classList.remove("settingsActive")
-            }
-            else if (monsterId == 2){
+            } else if (monsterId == 2){
                 document.getElementById("setMonsterId2").classList.add("settingsActive")
                 document.getElementById("setMonsterId0").classList.remove("settingsActive")
                 document.getElementById("setMonsterId1").classList.remove("settingsActive")
                 document.getElementById("setMonsterId3").classList.remove("settingsActive")
-            }
-            else {
+            } else {
                 document.getElementById("setMonsterId3").classList.add("settingsActive")
                 document.getElementById("setMonsterId0").classList.remove("settingsActive")
                 document.getElementById("setMonsterId1").classList.remove("settingsActive")
@@ -403,8 +427,7 @@
             if (doDungeon == true){
                 document.getElementById("doDungeonTrue").classList.add("settingsActive")
                 document.getElementById("doDungeonFalse").classList.remove("settingsDeactive")
-            }
-            else {
+            } else {
                 document.getElementById("doDungeonFalse").classList.add("settingsDeactive")
                 document.getElementById("doDungeonTrue").classList.remove("settingsActive")
             };
@@ -412,8 +435,7 @@
             if (dungeonDifficulty == "zaawansowane"){
                 document.getElementById("setDungeonDifficultyZaawansowane").classList.add("settingsActive")
                 document.getElementById("setDungeonDifficultyNormalne").classList.remove("settingsActive")
-            }
-            else {
+            } else {
                 document.getElementById("setDungeonDifficultyNormalne").classList.add("settingsActive")
                 document.getElementById("setDungeonDifficultyZaawansowane").classList.remove("settingsActive")
             };
@@ -421,8 +443,7 @@
             if (doArena == true){
                 document.getElementById("doArenaTrue").classList.add("settingsActive")
                 document.getElementById("doArenaFalse").classList.remove("settingsDeactive")
-            }
-            else {
+            } else {
                 document.getElementById("doArenaFalse").classList.add("settingsDeactive")
                 document.getElementById("doArenaTrue").classList.remove("settingsActive")
             };
@@ -430,10 +451,17 @@
             if (doCircus == true){
                 document.getElementById("doCircusTrue").classList.add("settingsActive")
                 document.getElementById("doCircusFalse").classList.remove("settingsDeactive")
-            }
-            else {
+            } else {
                 document.getElementById("doCircusFalse").classList.add("settingsDeactive")
                 document.getElementById("doCircusTrue").classList.remove("settingsActive")
+            };
+
+            if (doQuests == true){
+                document.getElementById("doQuestsTrue").classList.add("settingsActive")
+                document.getElementById("doQuestsFalse").classList.remove("settingsDeactive")
+            } else {
+                document.getElementById("doQuestsFalse").classList.add("settingsDeactive")
+                document.getElementById("doQuestsTrue").classList.remove("settingsActive")
             };
         };
 
@@ -503,8 +531,70 @@
         ***************/
 
         if (healthPoints < 10) {
-            //do zrobienia
-            console.log("Za mało punktów życia");
+            console.log("Low health");
+            //TODO
+        }
+
+        /****************
+        * Handle Quests *
+        ****************/
+
+        else if (doQuests === true && nextQuestTime < currentTime) {
+            function completeQuests() {
+                const inPanteonPage = $("body").first().attr("id") === "questsPage"
+
+                if (!inPanteonPage) {
+                    $("#mainmenu a.menuitem")[1].click();
+                } else {
+                    const completedQuests = $("#content .contentboard_slot a.quest_slot_button_finish")
+
+                    if (completedQuests.length) {
+                        completedQuests[0].click();
+                    } else {
+                        repeatQuests();
+                    }
+                }
+            };
+
+            function repeatQuests() {
+                const failedQuests = $("#content .contentboard_slot a.quest_slot_button_restart")
+
+                if (failedQuests.length) {
+                    failedQuests[0].click();
+                } else {
+                    takeQuest();
+                }
+            }
+
+            function takeQuest() {
+                const availableQuests = $("#content .contentboard_slot a.quest_slot_button_accept")
+
+                if (availableQuests.length) {
+                    availableQuests[0].click();
+                } else {
+                    checkNextQuestTime();
+                }
+            }
+
+            function checkNextQuestTime() {
+                const isTimer = $("#quest_header_cooldown")
+
+                if (isTimer.length) {
+                    const nextQuestIn = Number($("#quest_header_cooldown b span").attr("data-ticker-time-left"))
+
+                    nextQuestTime = currentTime + nextQuestIn
+                    localStorage.setItem('nextQuestTime', nextQuestTime)
+                } else {
+                    nextQuestTime = currentTime + 300000;
+                    localStorage.setItem('nextQuestTime', nextQuestTime)
+                }
+
+                autoGo();
+            }
+
+            setTimeout(function(){
+                completeQuests();
+            }, clickDelay);
         }
 
         /****************
@@ -693,7 +783,7 @@
 
                     if (eventMonsterId == 3 && freeEventPoints == 1 ) {
                         sessionStorage.setItem('freeEventPoints', 0);
-                        sessionStorage.setItem('eventExpeditionTimer', actualTime+301000);
+                        sessionStorage.setItem('eventExpeditionTimer', currentTime+301000);
                         document.getElementsByClassName("expedition_button")[2].click();
                     }
 
@@ -701,19 +791,19 @@
                         if (eventMonsterId == 3 && freeEventPoints > 1) {
                             document.getElementsByClassName("expedition_button")[3].click();
                             sessionStorage.setItem('freeEventPoints', freeEventPoints - 2);
-                            sessionStorage.setItem('eventExpeditionTimer', actualTime+301000);
+                            sessionStorage.setItem('eventExpeditionTimer', currentTime+301000);
                         }
                         else {
                             document.getElementsByClassName("expedition_button")[eventMonsterId].click();
                             sessionStorage.setItem('freeEventPoints', freeEventPoints - 1);
-                            sessionStorage.setItem('eventExpeditionTimer', actualTime+301000);
+                            sessionStorage.setItem('eventExpeditionTimer', currentTime+301000);
                         };
                     };
                 }
 
                 else {
                     //document.getElementById("content").getElementsByClassName("section-header")[1].getElementsByTagName("span")[0].firstChild.nodeValue.replace(/[^:0-9]/gi, '')
-                    sessionStorage.setItem('eventExpeditionTimer', actualTime+300000); //sprawdzam czy załadował się czas
+                    sessionStorage.setItem('eventExpeditionTimer', currentTime+300000); //sprawdzam czy załadował się czas
                     location.reload();
                 };
             };
@@ -745,6 +835,9 @@
     
                 if (doExpedition === true) {
                     nextActionTime[0] = convertTimeToMs(document.getElementById("cooldown_bar_text_expedition").innerText);
+                //     console.log('doExpedition')
+                // } else {
+                //     nextActionTime[0] = 999000
                 };
                 if (doDungeon === true) {
                     nextActionTime[1] = convertTimeToMs(document.getElementById("cooldown_bar_text_dungeon").innerText);
@@ -756,7 +849,7 @@
                     nextActionTime[3] = convertTimeToMs(document.getElementById("cooldown_bar_text_ct").innerText);
                 };
                 if (doEventExpedition === true && freeEventPoints > 0) {
-                    nextActionTime[4] = sessionStorage.getItem('eventExpeditionTimer') - actualTime;
+                    nextActionTime[4] = sessionStorage.getItem('eventExpeditionTimer') - currentTime;
                 };
     
                 var index = 0;
@@ -767,7 +860,7 @@
                         index = i;
                     }
                 };
-    
+
                 var nextActionName;
     
                 if (index === 0) {
@@ -805,7 +898,7 @@
     
                     return hrs + ':' + mins + ':' + secs;
                 };
-    
+
                 var nextActionWindow = document.createElement("div");
     
                 var showNextActionWindow = function() {
