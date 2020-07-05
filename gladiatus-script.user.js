@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.2
+// @version      2.30
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -32,7 +32,7 @@
     *****************/
 
     let autoGoActive = false;
-    if (sessionStorage.getItem('autoGoActive') !== null){
+    if (sessionStorage.getItem('autoGoActive')) {
         autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
     };
 
@@ -93,6 +93,10 @@
     if (playerLevel < 2) {
         doArena = false;
     };
+    let arenaOpponentLevel = "min"
+    if (localStorage.getItem('arenaOpponentLevel')) {
+        arenaOpponentLevel = localStorage.getItem('arenaOpponentLevel');
+    };
 
     //Circus
     let doCircus = true;
@@ -101,6 +105,10 @@
     };
     if (playerLevel < 10) {
         doCircus = false;
+    };
+    let circusOpponentLevel = "min"
+    if (localStorage.getItem('circusOpponentLevel')) {
+        circusOpponentLevel = localStorage.getItem('circusOpponentLevel');
     };
 
     //Event Expedition
@@ -134,13 +142,17 @@
         eventExpedition: 'Event Expedition',
         expedition: 'Expedition',
         in: 'In',
+        largest: 'Largest',
         location: 'Location',
         nextAction: 'Next action',
         no: 'No',
         normal: 'Normal',
         opponent: 'Opponent',
+        opponentLevel: 'Opponent Level',
         quests: 'Quests',
+        random: 'Random',
         settings: 'Settings',
+        smallest: 'Smallest',
         soon: 'Soon...',
         yes: 'Yes'
     }
@@ -154,13 +166,17 @@
         eventExpedition: 'Wyprawa Eventowa',
         expedition: 'Wyprawa',
         in: 'Za',
+        largest: 'Największy',
         location: 'Lokacja',
         nextAction: 'Następna akcja',
         no: 'Nie',
         normal: 'Normalne',
         opponent: 'Przeciwnik',
+        opponentLevel: 'Poziom Przeciwnika',
         quests: 'Zadania',
+        random: 'Losowy',
         settings: 'Ustawienia',
+        smallest: 'Najmniejszy',
         soon: 'Wkrótce...',
         yes: 'Tak'
     }
@@ -268,6 +284,12 @@
                             <div id="doArenaTrue" class="settingsButton">${content.yes}</div>
                             <div id="doArenaFalse" class="settingsButton">${content.no}</div>
                         </div>
+                        <div class="settingsHeaderSmall">${content.opponentLevel}</div>
+                        <div class="settingsSubcontent">
+                            <div id="setArenaOpponentLevelMin" class="settingsButton">${content.smallest}</div>
+                            <div id="setArenaOpponentLevelMax" class="settingsButton">${content.largest}</div>
+                            <div id="setArenaOpponentLevelRandom" class="settingsButton">${content.random}</div>
+                        </div>
                     </div>
 
                     <div>
@@ -275,6 +297,12 @@
                         <div class="settingsSubcontent">
                             <div id="doCircusTrue" class="settingsButton">${content.yes}</div>
                             <div id="doCircusFalse" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.opponentLevel}</div>
+                        <div class="settingsSubcontent">
+                            <div id="setCircusOpponentLevelMin" class="settingsButton">${content.smallest}</div>
+                            <div id="setCircusOpponentLevelMax" class="settingsButton">${content.largest}</div>
+                            <div id="setCircusOpponentLevelRandom" class="settingsButton">${content.random}</div>
                         </div>
                     </div>
 
@@ -328,7 +356,7 @@
 
         //Change Settings
 
-        const setDoExpedition = function(bool) {
+        function setDoExpedition(bool) {
             doExpedition = bool;
             localStorage.setItem('doExpedition', bool);
             setActiveButtons();
@@ -337,7 +365,7 @@
         $("#doExpeditionTrue").click(function() { setDoExpedition(true) });
         $("#doExpeditionFalse").click(function() { setDoExpedition(false) });
 
-        const setMonster = function(id) {
+        function setMonster(id) {
             monsterId = id;
             localStorage.setItem('monsterId', id);
             setActiveButtons();
@@ -348,7 +376,7 @@
         $("#setMonsterId2").click(function() { setMonster('2') });
         $("#setMonsterId3").click(function() { setMonster('3') });
 
-        const setDoDungeon = function(bool) {
+        function setDoDungeon(bool) {
             doDungeon = bool;
             localStorage.setItem('doDungeon', bool);
             setActiveButtons();
@@ -357,7 +385,7 @@
         $("#doDungeonTrue").click(function() { setDoDungeon(true) });
         $("#doDungeonFalse").click(function() { setDoDungeon(false) });
 
-        const setDungeonDifficulty = function(difficulty) {
+        function setDungeonDifficulty(difficulty) {
             dungeonDifficulty = difficulty;
             localStorage.setItem('dungeonDifficulty', difficulty);
             setActiveButtons();
@@ -366,7 +394,7 @@
         $("#setDungeonDifficultyNormalne").click(function() { setDungeonDifficulty("normalne") });
         $("#setDungeonDifficultyZaawansowane").click(function() { setDungeonDifficulty("zaawansowane") });
 
-        const setDoArena = function(bool) {
+        function setDoArena(bool) {
             doArena = bool;
             localStorage.setItem('doArena', bool);
             setActiveButtons();
@@ -375,7 +403,17 @@
         $("#doArenaTrue").click(function() { setDoArena(true) });
         $("#doArenaFalse").click(function() { setDoArena(false) });
 
-        const setDoCircus = function(bool) {
+        function setArenaOpponentLevel(level) {
+            arenaOpponentLevel = level;
+            localStorage.setItem('arenaOpponentLevel', level);
+            setActiveButtons();
+        };
+
+        $("#setArenaOpponentLevelMin").click(function() { setArenaOpponentLevel('min') });
+        $("#setArenaOpponentLevelMax").click(function() { setArenaOpponentLevel('max') });
+        $("#setArenaOpponentLevelRandom").click(function() { setArenaOpponentLevel('random') });
+
+        function setDoCircus(bool) {
             doCircus = bool;
             localStorage.setItem('doCircus', bool);
             setActiveButtons();
@@ -384,7 +422,17 @@
         $("#doCircusTrue").click(function() { setDoCircus(true) });
         $("#doCircusFalse").click(function() { setDoCircus(false) });
 
-        const setDoQuests = function(bool) {
+        function setCircusOpponentLevel(level) {
+            circusOpponentLevel = level;
+            localStorage.setItem('circusOpponentLevel', level);
+            setActiveButtons();
+        };
+
+        $("#setCircusOpponentLevelMin").click(function() { setCircusOpponentLevel('min') });
+        $("#setCircusOpponentLevelMax").click(function() { setCircusOpponentLevel('max') });
+        $("#setCircusOpponentLevelRandom").click(function() { setCircusOpponentLevel('random') });
+
+        function setDoQuests(bool) {
             doQuests = bool;
             localStorage.setItem('doQuests', bool);
             setActiveButtons();
@@ -393,7 +441,7 @@
         $("#doQuestsTrue").click(function() { setDoQuests(true) });
         $("#doQuestsFalse").click(function() { setDoQuests(false) });
 
-        var setActiveButtons = function() {
+        function setActiveButtons() {
             if (doExpedition == true){
                 document.getElementById("doExpeditionTrue").classList.add("settingsActive")
                 document.getElementById("doExpeditionFalse").classList.remove("settingsDeactive")
@@ -447,6 +495,20 @@
                 document.getElementById("doArenaFalse").classList.add("settingsDeactive")
                 document.getElementById("doArenaTrue").classList.remove("settingsActive")
             };
+
+            if (arenaOpponentLevel == "min"){
+                document.getElementById("setArenaOpponentLevelMin").classList.add("settingsActive")
+                document.getElementById("setArenaOpponentLevelMax").classList.remove("settingsActive")
+                document.getElementById("setArenaOpponentLevelRandom").classList.remove("settingsActive")
+            } else if (arenaOpponentLevel == "max"){
+                document.getElementById("setArenaOpponentLevelMax").classList.add("settingsActive")
+                document.getElementById("setArenaOpponentLevelMin").classList.remove("settingsActive")
+                document.getElementById("setArenaOpponentLevelRandom").classList.remove("settingsActive")
+            } else {
+                document.getElementById("setArenaOpponentLevelRandom").classList.add("settingsActive")
+                document.getElementById("setArenaOpponentLevelMin").classList.remove("settingsActive")
+                document.getElementById("setArenaOpponentLevelMax").classList.remove("settingsActive")
+            }
     
             if (doCircus == true){
                 document.getElementById("doCircusTrue").classList.add("settingsActive")
@@ -455,6 +517,20 @@
                 document.getElementById("doCircusFalse").classList.add("settingsDeactive")
                 document.getElementById("doCircusTrue").classList.remove("settingsActive")
             };
+
+            if (circusOpponentLevel == "min"){
+                document.getElementById("setCircusOpponentLevelMin").classList.add("settingsActive")
+                document.getElementById("setCircusOpponentLevelMax").classList.remove("settingsActive")
+                document.getElementById("setCircusOpponentLevelRandom").classList.remove("settingsActive")
+            } else if (circusOpponentLevel == "max"){
+                document.getElementById("setCircusOpponentLevelMax").classList.add("settingsActive")
+                document.getElementById("setCircusOpponentLevelMin").classList.remove("settingsActive")
+                document.getElementById("setCircusOpponentLevelRandom").classList.remove("settingsActive")
+            } else {
+                document.getElementById("setCircusOpponentLevelRandom").classList.add("settingsActive")
+                document.getElementById("setCircusOpponentLevelMin").classList.remove("settingsActive")
+                document.getElementById("setCircusOpponentLevelMax").classList.remove("settingsActive")
+            }
 
             if (doQuests == true){
                 document.getElementById("doQuestsTrue").classList.add("settingsActive")
@@ -495,6 +571,49 @@
     document.getElementById("mainmenu").insertBefore(settingsButton, document.getElementById("mainmenu").children[1]);
 
     /****************
+    *    Helpers    *
+    ****************/
+
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+
+    function getSmallestIntIndex(values) {
+        let index = 0;
+        let minValue = values[0];
+
+        for (let i = 1; i < values.length; i++) {
+            if (values[i] < minValue) {
+                minValue = values[i];
+                index = i;
+            }
+        };
+        return index;
+    };
+
+    function getLargestIntIndex(values) {
+        let index = 0;
+        let maxValue = values[0];
+
+        for (let i = 1; i < values.length; i++) {
+            if (values[i] > maxValue) {
+                maxValue = values[i];
+                index = i;
+            }
+        };
+        return index;
+    };
+
+    function getRandomIntIndex(values) {
+        const index = Math.floor(Math.random() * values.length);
+
+        return index;
+    };
+
+    /****************
     *    Auto Go    *
     ****************/
 
@@ -502,13 +621,7 @@
 
         //Click Delay 0.9 - 2.4 s
 
-        function getRandomIntInclusive(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        };
-
-        var clickDelay = getRandomIntInclusive(900, 2400);
+        const clickDelay = getRandomInt(900, 2400);
 
         //Claim Daily Reward
 
@@ -683,23 +796,24 @@
                     }
 
                     else { 
-                        var levels = new Array();
+                        const levels = new Array();
                         levels[0] = Number(document.getElementById("own2").getElementsByTagName("td")[1].firstChild.nodeValue)
                         levels[1] = Number(document.getElementById("own2").getElementsByTagName("td")[5].firstChild.nodeValue)
                         levels[2] = Number(document.getElementById("own2").getElementsByTagName("td")[9].firstChild.nodeValue)
                         levels[3] = Number(document.getElementById("own2").getElementsByTagName("td")[13].firstChild.nodeValue)
                         levels[4] = Number(document.getElementById("own2").getElementsByTagName("td")[17].firstChild.nodeValue)
 
-                        var index = 0;
-                        var minValue = levels[0];
-                        for (var i = 1; i < levels.length; i++) {
-                            if (levels[i] < minValue) {
-                                minValue = levels[i];
-                                index = i;
-                            }
-                        };
+                        let opponentIndex;
+
+                        if (arenaOpponentLevel === "min") {
+                            opponentIndex = getSmallestIntIndex(levels)
+                        } else if (arenaOpponentLevel === "max") {
+                            opponentIndex = getLargestIntIndex(levels)
+                        } else {
+                            opponentIndex = getRandomIntIndex(levels)
+                        }
                 
-                        document.getElementsByClassName("attack")[index].click();
+                        document.getElementsByClassName("attack")[opponentIndex].click();
                     }
                 }
             };
@@ -732,23 +846,24 @@
                     }
 
                     else { 
-                        var levels = new Array();
+                        const levels = new Array();
                         levels[0] = Number(document.getElementById("own3").getElementsByTagName("td")[1].firstChild.nodeValue)
                         levels[1] = Number(document.getElementById("own3").getElementsByTagName("td")[5].firstChild.nodeValue)
                         levels[2] = Number(document.getElementById("own3").getElementsByTagName("td")[9].firstChild.nodeValue)
                         levels[3] = Number(document.getElementById("own3").getElementsByTagName("td")[13].firstChild.nodeValue)
                         levels[4] = Number(document.getElementById("own3").getElementsByTagName("td")[17].firstChild.nodeValue)
 
-                        var index = 0;
-                        var minValue = levels[0];
-                        for (var i = 1; i < levels.length; i++) {
-                            if (levels[i] < minValue) {
-                                minValue = levels[i];
-                                index = i;
-                            }
-                        };
+                        let opponentIndex;
 
-                        document.getElementsByClassName("attack")[index].click();
+                        if (circusOpponentLevel === "min") {
+                            opponentIndex = getSmallestIntIndex(levels)
+                        } else if (circusOpponentLevel === "max") {
+                            opponentIndex = getLargestIntIndex(levels)
+                        } else {
+                            opponentIndex = getRandomIntIndex(levels)
+                        }
+
+                        document.getElementsByClassName("attack")[opponentIndex].click();
                     };
                 };
             };

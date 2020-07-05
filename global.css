@@ -56,7 +56,7 @@
     display: grid;
     margin-top: 20px;
     grid-template-columns: 50% 50%;
-    grid-template-rows: 180px 70px 70px;
+    grid-template-rows: 180px 130px 70px;
     width: 100%;
 }
 

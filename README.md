@@ -11,6 +11,7 @@
   - Turn on/off every activity
   - Choose an expedition opponent
   - Choose an dungeon difficulty
+  - Set arena and circus opponent level
   - Set language (English/Polish)
   
 Installation:
