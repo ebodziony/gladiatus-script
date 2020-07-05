@@ -5,6 +5,7 @@
   - Auto dungeon
   - Auto arena provinciarum
   - Auto circus turma provinciarum
+  - Auto quests in pantheon
   
 * Settings
   - Turn on/off every activity
@@ -31,5 +32,5 @@ Usage:
 To do:
 ---------
   - Using food
-  - Auto tasks
+  - Pantheon quests type selecting
   - Auto gold spending in auction house.
