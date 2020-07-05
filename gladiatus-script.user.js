@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.31
+// @version      2.32
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -38,7 +38,7 @@
 
     const currentTime = new Date().getTime();
 
-    const playerLevel = $("#header_values_level").first().html()
+    const playerLevel = $("#header_values_level").first().html();
 
     const healthPoints = Number(document.getElementById("header_values_hp_percent").firstChild.nodeValue.replace(/[^0-9]/gi, ''));
 
@@ -141,9 +141,11 @@
         dungeon: 'Dungeon',
         eventExpedition: 'Event Expedition',
         expedition: 'Expedition',
+        highest: 'Highest',
         in: 'In',
-        largest: 'Largest',
+        lastUsed: "Last Used",
         location: 'Location',
+        lowest: 'Lowest',
         nextAction: 'Next action',
         no: 'No',
         normal: 'Normal',
@@ -152,7 +154,6 @@
         quests: 'Quests',
         random: 'Random',
         settings: 'Settings',
-        smallest: 'Smallest',
         soon: 'Soon...',
         yes: 'Yes'
     }
@@ -165,9 +166,11 @@
         dungeon: 'Lochy',
         eventExpedition: 'Wyprawa Eventowa',
         expedition: 'Wyprawa',
+        highest: 'Najwyższy',
         in: 'Za',
-        largest: 'Największy',
+        lastUsed: "Ostatnio Używana",
         location: 'Lokacja',
+        lowest: 'Najniższy',
         nextAction: 'Następna akcja',
         no: 'Nie',
         normal: 'Normalne',
@@ -176,7 +179,7 @@
         quests: 'Zadania',
         random: 'Losowy',
         settings: 'Ustawienia',
-        smallest: 'Najmniejszy',
+    
         soon: 'Wkrótce...',
         yes: 'Tak'
     }
@@ -219,10 +222,13 @@
 
         clearTimeout(setTimeout);
 
-        if (document.getElementById("nextActionWindow") !== null) {
+        if (document.getElementById("nextActionWindow")) {
             document.getElementById("nextActionWindow").remove();
         };
 
+        if (document.getElementById("lowHealth")) {
+            document.getElementById("lowHealth").remove();
+        };
     };
 
     //Open Settings
@@ -257,7 +263,7 @@
                         </div>
                         <div class="settingsHeaderSmall">${content.location}</div>
                         <div class="settingsSubcontent">
-                            <div id="expeditionLocation" class="settingsButton">${content.soon}</div>
+                            <div id="expeditionLocation" class="settingsButton">${content.lastUsed}</div>
                         </div>
                     </div>
 
@@ -274,7 +280,7 @@
                         </div>
                         <div class="settingsHeaderSmall">${content.location}</div>
                         <div class="settingsSubcontent">
-                            <div id="dungeonLocation" class="settingsButton">${content.soon}</div>
+                            <div id="dungeonLocation" class="settingsButton">${content.lastUsed}</div>
                         </div>
                     </div>
 
@@ -286,8 +292,8 @@
                         </div>
                         <div class="settingsHeaderSmall">${content.opponentLevel}</div>
                         <div class="settingsSubcontent">
-                            <div id="setArenaOpponentLevelMin" class="settingsButton">${content.smallest}</div>
-                            <div id="setArenaOpponentLevelMax" class="settingsButton">${content.largest}</div>
+                            <div id="setArenaOpponentLevelMin" class="settingsButton">${content.lowest}</div>
+                            <div id="setArenaOpponentLevelMax" class="settingsButton">${content.highest}</div>
                             <div id="setArenaOpponentLevelRandom" class="settingsButton">${content.random}</div>
                         </div>
                     </div>
@@ -300,8 +306,8 @@
                         </div>
                         <div class="settingsHeaderSmall">${content.opponentLevel}</div>
                         <div class="settingsSubcontent">
-                            <div id="setCircusOpponentLevelMin" class="settingsButton">${content.smallest}</div>
-                            <div id="setCircusOpponentLevelMax" class="settingsButton">${content.largest}</div>
+                            <div id="setCircusOpponentLevelMin" class="settingsButton">${content.lowest}</div>
+                            <div id="setCircusOpponentLevelMax" class="settingsButton">${content.highest}</div>
                             <div id="setCircusOpponentLevelRandom" class="settingsButton">${content.random}</div>
                         </div>
                     </div>
@@ -613,6 +619,11 @@
         return index;
     };
 
+    function convertTimeToMs(t) {
+        var ms = Number(t.split(':')[0]) * 60 * 60 * 1000 + Number(t.split(':')[1]) * 60 * 1000 + Number(t.split(':')[2]) * 1000;
+        return ms;
+    };
+
     /****************
     *    Auto Go    *
     ****************/
@@ -645,6 +656,18 @@
 
         if (healthPoints < 10) {
             console.log("Low health");
+
+            var lowHealthAlert = document.createElement("div");
+
+            function showLowHealthAlert() {
+                lowHealthAlert.setAttribute("id", "lowHealth")
+                lowHealthAlert.setAttribute("style", "width: 365px; padding: 20px 0; color: #58ffbb; font-size: 20px; background-color: #000000aa; border-radius: 15px; display: block; position: absolute; left: 506px; top: 120px; z-index: 999;" );
+                lowHealthAlert.innerHTML = `
+                    <span style="color: #ea1414;">Low Health!</span>`;
+                document.getElementById("header_game").insertBefore(lowHealthAlert, document.getElementById("header_game").children[0]);
+            };
+            showLowHealthAlert();
+
             //TODO
         }
 
@@ -940,102 +963,129 @@
             ******************/
 
             if (safeMode===false) {
-
-                var convertTimeToMs = function(t) {
-                    var ms = Number(t.split(':')[0]) * 60 * 60 * 1000 + Number(t.split(':')[1]) * 60 * 1000 + Number(t.split(':')[2]) * 1000;
-                    return ms;
-                };
-    
-                var nextActionTime = new Array();
+                const actions = [];
     
                 if (doExpedition === true) {
-                    nextActionTime[0] = convertTimeToMs(document.getElementById("cooldown_bar_text_expedition").innerText);
-                //     console.log('doExpedition')
-                // } else {
-                //     nextActionTime[0] = 999000
-                };
-                if (doDungeon === true) {
-                    nextActionTime[1] = convertTimeToMs(document.getElementById("cooldown_bar_text_dungeon").innerText);
-                };
-                if (doArena === true) {
-                    nextActionTime[2] = convertTimeToMs(document.getElementById("cooldown_bar_text_arena").innerText);
-                };
-                if (doCircus === true) {
-                    nextActionTime[3] = convertTimeToMs(document.getElementById("cooldown_bar_text_ct").innerText);
-                };
-                if (doEventExpedition === true && freeEventPoints > 0) {
-                    nextActionTime[4] = sessionStorage.getItem('eventExpeditionTimer') - currentTime;
-                };
-    
-                var index = 0;
-                var minValue = nextActionTime[0];
-                for (var i = 1; i < nextActionTime.length; i++) {
-                    if (nextActionTime[i] < minValue) {
-                        minValue = nextActionTime[i];
-                        index = i;
-                    }
+                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_expedition").innerText);
+
+                    actions.push({
+                        name: 'expedition',
+                        time: timeTo,
+                        index: 0
+                    });
                 };
 
-                var nextActionName;
-    
-                if (index === 0) {
-                    nextActionName = content.expedition;
-                }
-                else if (index === 1) {
-                    nextActionName = content.dungeon;
-                }
-                else if (index === 2) {
-                    nextActionName = content.arena;
-                }
-                else if (index === 3) {
-                    nextActionName = content.circusTurma;
-                }
-                else if (index === 4) {
-                    nextActionName = "Event expedition";
-                }
-                else {
-                    nextActionName = "Unkown";
+                if (doDungeon === true) {
+                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_dungeon").innerText);
+
+                    actions.push({
+                        name: 'dungeon',
+                        time: timeTo,
+                        index: 1
+                    });
                 };
+
+                if (doArena === true) {
+                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_arena").innerText);
+
+                    actions.push({
+                        name: 'arena',
+                        time: timeTo,
+                        index: 2,
+                    });
+                };
+
+                if (doCircus === true) {
+                    const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_ct").innerText);
+
+                    actions.push({
+                        name: 'circusTurma',
+                        time: timeTo,
+                        index: 3,
+                    });
+                };
+
+                if (doEventExpedition === true && freeEventPoints > 0) {
+                    const timeTo = sessionStorage.getItem('eventExpeditionTimer') - currentTime;
+
+                    actions.push({
+                        name: 'eventExpedition',
+                        time: timeTo,
+                        index: 4,
+                    });
+                };
+
+                function getNextAction(actions) {
+                    let index = 0;
+                    let minValue = actions[0].time;
+
+                    for (let i = 1; i < actions.length; i++) {
+                        if (actions[i].time < minValue) {
+                            minValue = actions[i].time;
+                            index = i;
+
+                            console.log(actions[i].time)
+                            console.log(minValue)
+                        }
+                    };
+                    return actions[index]
+                };
+
+                const nextAction = getNextAction(actions);
     
-                var convertTimeToDate = function(timeInMs) {
-                    var timeInSecs = timeInMs / 1000;
+                function formatTime(timeInMs) {
+                    if (timeInMs < 1000) {
+                        return "0:00:00"
+                    };
+
+                    let timeInSecs = timeInMs / 1000;
                     timeInSecs = Math.round(timeInSecs);
-                    var secs = timeInSecs % 60;
+                    let secs = timeInSecs % 60;
                     if (secs < 10) {
                         secs = "0" + secs;
                     };
                     timeInSecs = (timeInSecs - secs) / 60;
-                    var mins = timeInSecs % 60;
+                    let mins = timeInSecs % 60;
                     if (mins < 10) {
                         mins = "0" + mins;
                     };
-                    var hrs = (timeInSecs - mins) / 60;
+                    let hrs = (timeInSecs - mins) / 60;
     
                     return hrs + ':' + mins + ':' + secs;
                 };
 
                 var nextActionWindow = document.createElement("div");
     
-                var showNextActionWindow = function() {
+                function showNextActionWindow() {
                     nextActionWindow.setAttribute("id", "nextActionWindow")
                     nextActionWindow.setAttribute("style", "height: 72px; width: 365px; padding-top: 13px; color: #58ffbb; font-size: 20px; background-color: #000000aa; border-radius: 15px; display: block; position: absolute; left: 506px; top: 120px; z-index: 999;" );
-                    nextActionWindow.innerHTML = `<span style="color: #fff;">${content.nextAction}: </span><span>${nextActionName}</span></br><span style="color: #fff;">${content.in}: </span><span>${convertTimeToDate(nextActionTime[index])}</span>`;
+                    nextActionWindow.innerHTML = `
+                        <span style="color: #fff;">${content.nextAction}: </span>
+                        <span>${content[nextAction.name]}</span></br>
+                        <span style="color: #fff;">${content.in}: </span>
+                        <span>${formatTime(nextAction.time)}</span>`;
                     document.getElementById("header_game").insertBefore(nextActionWindow, document.getElementById("header_game").children[0]);
                 };
                 showNextActionWindow();
+
+                let nextActionCounter;
     
                 nextActionCounter = setInterval(function() {
-                    nextActionTime[index] = nextActionTime[index]-1000;
+                    nextAction.time = nextAction.time - 1000;
     
-                    nextActionWindow.innerHTML = `<span style="color: #fff;">${content.nextAction}: </span><span>${nextActionName}</span></br><span style="color: #fff;">${content.in}: </span><span>${convertTimeToDate(nextActionTime[index])}</span>`;
+                    nextActionWindow.innerHTML = `
+                        <span style="color: #fff;">${content.nextAction}: </span>
+                        <span>${content[nextAction.name]}</span></br>
+                        <span style="color: #fff;">${content.in}: </span>
+                        <span>${formatTime(nextAction.time)}</span>`;
     
-                    if (nextActionTime[index]<=0) {
-                        if (index === 4) {
+                    if (nextAction.time <= 0) {
+                        if (nextAction.index === 4) {
                             document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
                         }
                         else {
                             setTimeout(function(){
-                                document.getElementsByClassName("cooldown_bar_link")[index].click();
+                                document.getElementsByClassName("cooldown_bar_link")[nextAction.index].click();
                             }, clickDelay);
                         };
                     };
@@ -1047,7 +1097,7 @@
             ******************/
 
             else {
-                //do zrobienia
+                //TODO
                 console.log("No safe mode yet")
             };
         };
