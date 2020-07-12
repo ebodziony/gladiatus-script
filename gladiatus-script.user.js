@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.33
+// @version      2.34
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -10,7 +10,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=1.9
+// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/css/master/style.css?ver=2.34
 // ==/UserScript==
 
 
@@ -54,6 +54,17 @@
     if (localStorage.getItem('doQuests')) {
         doQuests = localStorage.getItem('doQuests') === "true" ? true : false;
     }
+    let questTypes = {
+        combat: true,
+        arena: true,
+        circus: true,
+        expedition: true,
+        dungeon: true,
+        items: true
+    };
+    if (localStorage.getItem('questTypes')) {
+        questTypes = JSON.parse(localStorage.getItem('questTypes'));
+    }
     let nextQuestTime = 0;
     if (localStorage.getItem('nextQuestTime')) {
         nextQuestTime = Number(localStorage.getItem('nextQuestTime'));
@@ -79,8 +90,8 @@
     if (playerLevel < 10) {
         doDungeon = false;
     };
-    let dungeonId = 0;
-    let dungeonDifficulty = "normalne";
+    // let dungeonId = 0;
+    let dungeonDifficulty = "normal";
     if (localStorage.getItem('dungeonDifficulty')) {
         dungeonDifficulty = localStorage.getItem('dungeonDifficulty');
     };
@@ -155,6 +166,7 @@
         random: 'Random',
         settings: 'Settings',
         soon: 'Soon...',
+        type: 'Type',
         yes: 'Yes'
     }
 
@@ -179,8 +191,8 @@
         quests: 'Zadania',
         random: 'Losowy',
         settings: 'Ustawienia',
-    
         soon: 'Wkrótce...',
+        type: 'Rodzaj',
         yes: 'Tak'
     }
 
@@ -275,8 +287,8 @@
                         </div>
                         <div class="settingsHeaderSmall">${content.difficulty}</div>
                         <div class="settingsSubcontent">
-                            <div id="setDungeonDifficultyNormalne" class="settingsButton">${content.normal}</div>
-                            <div id="setDungeonDifficultyZaawansowane" class="settingsButton">${content.advanced}</div>
+                            <div id="setDungeonDifficultyNormal" class="settingsButton">${content.normal}</div>
+                            <div id="setDungeonDifficultyAdvanced" class="settingsButton">${content.advanced}</div>
                         </div>
                         <div class="settingsHeaderSmall">${content.location}</div>
                         <div class="settingsSubcontent">
@@ -317,6 +329,15 @@
                         <div class="settingsSubcontent">
                             <div id="doQuestsTrue" class="settingsButton">${content.yes}</div>
                             <div id="doQuestsFalse" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.type}</div>
+                        <div class="settingsSubcontent">
+                            <div id="doCombatQuests" class="settingsButton quest-type combat"></div>
+                            <div id="doArenaQuests" class="settingsButton quest-type arena"></div>
+                            <div id="doCircusQuests" class="settingsButton quest-type circus"></div>
+                            <div id="doExpeditionQuests" class="settingsButton quest-type expedition"></div>
+                            <div id="doDungeonQuests" class="settingsButton quest-type dungeon"></div>
+                            <div id="doItemsQuests" class="settingsButton quest-type items"></div>
                         </div>
                     </div>
 
@@ -397,8 +418,8 @@
             setActiveButtons();
         };
 
-        $("#setDungeonDifficultyNormalne").click(function() { setDungeonDifficulty("normalne") });
-        $("#setDungeonDifficultyZaawansowane").click(function() { setDungeonDifficulty("zaawansowane") });
+        $("#setDungeonDifficultyNormal").click(function() { setDungeonDifficulty("normal") });
+        $("#setDungeonDifficultyAdvanced").click(function() { setDungeonDifficulty("advanced") });
 
         function setDoArena(bool) {
             doArena = bool;
@@ -447,6 +468,19 @@
         $("#doQuestsTrue").click(function() { setDoQuests(true) });
         $("#doQuestsFalse").click(function() { setDoQuests(false) });
 
+        function setQuestTypes(type) {
+            questTypes[type] = !questTypes[type];
+            localStorage.setItem('questTypes', JSON.stringify(questTypes));
+            setActiveButtons();
+        };
+
+        $("#doCombatQuests").click(function() { setQuestTypes('combat') });
+        $("#doArenaQuests").click(function() { setQuestTypes('arena') });
+        $("#doCircusQuests").click(function() { setQuestTypes('circus') });
+        $("#doExpeditionQuests").click(function() { setQuestTypes('expedition') });
+        $("#doDungeonQuests").click(function() { setQuestTypes('dungeon') });
+        $("#doItemsQuests").click(function() { setQuestTypes('items') });
+
         function setActiveButtons() {
             if (doExpedition == true){
                 document.getElementById("doExpeditionTrue").classList.add("settingsActive")
@@ -486,12 +520,12 @@
                 document.getElementById("doDungeonTrue").classList.remove("settingsActive")
             };
     
-            if (dungeonDifficulty == "zaawansowane"){
-                document.getElementById("setDungeonDifficultyZaawansowane").classList.add("settingsActive")
-                document.getElementById("setDungeonDifficultyNormalne").classList.remove("settingsActive")
+            if (dungeonDifficulty == "advanced"){
+                document.getElementById("setDungeonDifficultyAdvanced").classList.add("settingsActive")
+                document.getElementById("setDungeonDifficultyNormal").classList.remove("settingsActive")
             } else {
-                document.getElementById("setDungeonDifficultyNormalne").classList.add("settingsActive")
-                document.getElementById("setDungeonDifficultyZaawansowane").classList.remove("settingsActive")
+                document.getElementById("setDungeonDifficultyNormal").classList.add("settingsActive")
+                document.getElementById("setDungeonDifficultyAdvanced").classList.remove("settingsActive")
             };
     
             if (doArena == true){
@@ -545,6 +579,42 @@
                 document.getElementById("doQuestsFalse").classList.add("settingsDeactive")
                 document.getElementById("doQuestsTrue").classList.remove("settingsActive")
             };
+
+            if (questTypes.combat == true){
+                document.getElementById("doCombatQuests").classList.add("settingsActive");
+            } else {
+                document.getElementById("doCombatQuests").classList.remove("settingsActive");
+            }
+
+            if (questTypes.arena == true){
+                document.getElementById("doArenaQuests").classList.add("settingsActive");
+            } else {
+                document.getElementById("doArenaQuests").classList.remove("settingsActive");
+            }
+
+            if (questTypes.circus == true){
+                document.getElementById("doCircusQuests").classList.add("settingsActive");
+            } else {
+                document.getElementById("doCircusQuests").classList.remove("settingsActive");
+            }
+
+            if (questTypes.expedition == true){
+                document.getElementById("doExpeditionQuests").classList.add("settingsActive");
+            } else {
+                document.getElementById("doExpeditionQuests").classList.remove("settingsActive");
+            }
+
+            if (questTypes.dungeon == true){
+                document.getElementById("doDungeonQuests").classList.add("settingsActive");
+            } else {
+                document.getElementById("doDungeonQuests").classList.remove("settingsActive");
+            }
+
+            if (questTypes.items == true){
+                document.getElementById("doItemsQuests").classList.add("settingsActive");
+            } else {
+                document.getElementById("doItemsQuests").classList.remove("settingsActive");
+            }
         };
 
         setActiveButtons();
@@ -677,12 +747,12 @@
 
         else if (doQuests === true && nextQuestTime < currentTime) {
             function completeQuests() {
-                const inPanteonPage = $("body").first().attr("id") === "questsPage"
+                const inPanteonPage = $("body").first().attr("id") === "questsPage";
 
                 if (!inPanteonPage) {
                     $("#mainmenu a.menuitem")[1].click();
                 } else {
-                    const completedQuests = $("#content .contentboard_slot a.quest_slot_button_finish")
+                    const completedQuests = $("#content .contentboard_slot a.quest_slot_button_finish");
 
                     if (completedQuests.length) {
                         completedQuests[0].click();
@@ -693,7 +763,7 @@
             };
 
             function repeatQuests() {
-                const failedQuests = $("#content .contentboard_slot a.quest_slot_button_restart")
+                const failedQuests = $("#content .contentboard_slot a.quest_slot_button_restart");
 
                 if (failedQuests.length) {
                     failedQuests[0].click();
@@ -703,13 +773,31 @@
             }
 
             function takeQuest() {
-                const availableQuests = $("#content .contentboard_slot a.quest_slot_button_accept")
+                const canTakeQuest = $("#content .contentboard_slot a.quest_slot_button_accept");
 
-                if (availableQuests.length) {
-                    availableQuests[0].click();
-                } else {
-                    checkNextQuestTime();
-                }
+                if (canTakeQuest.length) {
+                    function getIconName(url) {
+                        return url.split("/quest/icon_")[1].split("_inactive")[0];
+                    }
+
+                    const availableQuests = $("#content .contentboard_slot_inactive");
+
+                    for (const quest of availableQuests) {
+                        let icon = getIconName(quest.getElementsByClassName("quest_slot_icon")[0].style.backgroundImage);
+
+                        if (icon === "grouparena") {
+                            icon = "circus";
+                        };
+
+                        if (questTypes[icon]) {
+                            return quest.getElementsByClassName("quest_slot_button_accept")[0].click();
+                        };
+                    }           
+
+                    $("#quest_footer_reroll input").first().click()
+                }  
+
+                checkNextQuestTime();
             }
 
             function checkNextQuestTime() {
@@ -774,7 +862,7 @@
 
                 else {
                     if (document.getElementById("content").getElementsByClassName("button1")[0].value === "normalne") {
-                        if (dungeonDifficulty === "zaawansowane") {
+                        if (dungeonDifficulty === "advanced") {
                             document.getElementById("content").getElementsByClassName("button1")[1].click();
                         }
                         else {

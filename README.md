@@ -12,6 +12,7 @@
   - Choose an expedition opponent
   - Choose an dungeon difficulty
   - Set arena and circus opponent level
+  - Choose quests types 
   - Set language (English/Polish)
   
 Installation:
@@ -33,5 +34,9 @@ Usage:
 To do:
 ---------
   - Using food
-  - Pantheon quests type selecting
   - Auto gold spending in auction house.
+  - Auto trening
+
+Bugs:
+---------
+  - If you found any, please report it [here](https://github.com/ebodziony/gladiatus-script/issues)

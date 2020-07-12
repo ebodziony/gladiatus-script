@@ -13,9 +13,9 @@
 
 #settingsWindow
 {
-    height: 461px;
-    width: 558px;
-    padding: 50px 30px;
+    height: 511px;
+    width: 538px;
+    padding: 50px 40px;
     background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/settings.png');
     display: block;
     position: absolute;
@@ -76,9 +76,9 @@
 {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     margin: 3px 0px;
-    padding: 0px 32px;
+    padding: 0px 22px;
 }
 
 .settingsButton
@@ -136,7 +136,65 @@
     background: linear-gradient(to bottom,#272727,#121212);
 }
 
+.quest-type {
+    background-size: contain;
+    height: 31px;
+    width: 31px;
+    margin: 0px 2px;
+}
 
+.quest-type:hover {
+    background-size: contain;
+    filter: brightness(1.2);
+}
+
+.quest-type.combat {
+    background-image: url(9379/img/ui/quest/icon_combat_inactive.jpg);
+}
+
+.quest-type.combat.settingsActive {
+    background-image: url(9379/img/ui/quest/icon_combat_active.jpg);
+}
+
+.quest-type.arena {
+    background-image: url(9379/img/ui/quest/icon_arena_inactive.jpg)
+}
+
+.quest-type.arena.settingsActive {
+    background-image: url(9379/img/ui/quest/icon_arena_active.jpg)
+}
+
+.quest-type.circus {
+    background-image: url(9379/img/ui/quest/icon_grouparena_inactive.jpg)
+}
+
+.quest-type.circus.settingsActive {
+    background-image: url(9379/img/ui/quest/icon_grouparena_active.jpg)
+}
+
+.quest-type.expedition {
+    background-image: url(9379/img/ui/quest/icon_expedition_inactive.jpg)
+}
+
+.quest-type.expedition.settingsActive {
+    background-image: url(9379/img/ui/quest/icon_expedition_active.jpg)
+}
+
+.quest-type.dungeon {
+    background-image: url(9379/img/ui/quest/icon_dungeon_inactive.jpg)
+}
+
+.quest-type.dungeon.settingsActive {
+    background-image: url(9379/img/ui/quest/icon_dungeon_active.jpg)
+}
+
+.quest-type.items {
+    background-image: url(9379/img/ui/quest/icon_items_inactive.jpg)
+}
+
+.quest-type.items.settingsActive {
+    background-image: url(9379/img/ui/quest/icon_items_active.jpg)
+}
 
 #overlayBack
 {
