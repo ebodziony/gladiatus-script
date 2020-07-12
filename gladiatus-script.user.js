@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.32
+// @version      2.33
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
