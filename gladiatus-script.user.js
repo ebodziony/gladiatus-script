@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.35
+// @version      2.4
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -19,37 +19,41 @@
 
     // Add CSS
 
-    function addCustomCSS(){
-
+    function addCustomCSS() {
         const globalCSS = GM_getResourceText("customCSS_global");
         GM_addStyle(globalCSS);
-
     }
+    
     addCustomCSS();
 
     /*****************
     *     Global     *
-    *****************/
+    *****************/  
 
     let autoGoActive = false;
     if (sessionStorage.getItem('autoGoActive')) {
         autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
     };
 
-    const currentTime = new Date().getTime();
+    const currentDate = $("#server-time").html().split(',')[0];
 
-    const playerLevel = $("#header_values_level").first().html();
-
-    const healthPoints = Number(document.getElementById("header_values_hp_percent").firstChild.nodeValue.replace(/[^0-9]/gi, ''));
+    const player = {
+        level: Number($("#header_values_level").first().html()),
+        hp: Number($("#header_values_hp_percent").first().html().replace(/[^0-9]/gi, '')),
+        gold: Number($("#sstat_gold_val").first().html().replace(/\./g, '')),
+    };
 
     /*****************
     *     Config     *
     *****************/
 
-    //Mode
-    let safeMode = false;
+    // Mode
 
-    //Quests
+    let safeMode = false;
+    let nextEncounterTime = Number(localStorage.getItem('nextEncounter'));
+
+    // Quests
+
     let doQuests = true;
     if (localStorage.getItem('doQuests')) {
         doQuests = localStorage.getItem('doQuests') === "true" ? true : false;
@@ -70,38 +74,38 @@
         nextQuestTime = Number(localStorage.getItem('nextQuestTime'));
     }
 
-    //Expedition
+    // Expedition
+
     let doExpedition = true;
     if (localStorage.getItem('doExpedition')) {
         doExpedition = localStorage.getItem('doExpedition') === "true" ? true : false;
     };
-    // let locationId = 0;
-    // let locationName = "Not selected";
     let monsterId = 0;
     if (localStorage.getItem('monsterId')) {
         monsterId = Number(localStorage.getItem('monsterId'));
     };
 
-    //Dungeon
+    // Dungeon
+    
     let doDungeon = true;
     if (localStorage.getItem('doDungeon')) {
         doDungeon = localStorage.getItem('doDungeon') === "true" ? true : false;
     };
-    if (playerLevel < 10) {
+    if (player.level < 10) {
         doDungeon = false;
     };
-    // let dungeonId = 0;
     let dungeonDifficulty = "normal";
     if (localStorage.getItem('dungeonDifficulty')) {
         dungeonDifficulty = localStorage.getItem('dungeonDifficulty');
     };
 
-    //Arena
+    // Arena
+
     let doArena = true;
     if (localStorage.getItem('doArena')) {
         doArena = localStorage.getItem('doArena') === "true" ? true : false;
     };
-    if (playerLevel < 2) {
+    if (player.level < 2) {
         doArena = false;
     };
     let arenaOpponentLevel = "min"
@@ -109,12 +113,13 @@
         arenaOpponentLevel = localStorage.getItem('arenaOpponentLevel');
     };
 
-    //Circus
+    // Circus
+
     let doCircus = true;
     if (localStorage.getItem('doCircus')){
         doCircus = localStorage.getItem('doCircus') === "true" ? true : false;
     };
-    if (playerLevel < 10) {
+    if (player.level < 10) {
         doCircus = false;
     };
     let circusOpponentLevel = "min"
@@ -122,22 +127,33 @@
         circusOpponentLevel = localStorage.getItem('circusOpponentLevel');
     };
 
-    //Event Expedition
-    var doEventExpedition = true;
-    if (document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0] === undefined){
+    // Event Expedition
+
+    let doEventExpedition = true;
+    if (localStorage.getItem('doEventExpedition')) {
+        doEventExpedition = localStorage.getItem('doEventExpedition') === "true" ? true : false;
+    };
+    if (!document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0]){
         doEventExpedition = false;
     };
-    var eventMonsterId = 0;
-    var eventExpeditionTimerDone = true;
-    if (sessionStorage.getItem('eventExpeditionTimer') !== null){
-        eventExpeditionTimerDone = sessionStorage.getItem('eventExpeditionTimer') < currentTime;
+    
+    let eventMonsterId = 0;
+    if (localStorage.getItem('eventMonsterId')) {
+        eventMonsterId = Number(localStorage.getItem('eventMonsterId'));
     };
-    var freeEventPoints = 16;
-    if (sessionStorage.getItem('freeEventPoints') !== null){
-        freeEventPoints = sessionStorage.getItem('freeEventPoints');
+
+    let nextEventExpeditionTime = 0;
+    if (localStorage.getItem('nextEventExpeditionTime')) {
+        nextEventExpeditionTime = Number(localStorage.getItem('nextEventExpeditionTime'));
     };
-    if (document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0] === undefined){
-        freeEventPoints = 0;
+
+    let eventPoints = 16;
+    if (localStorage.getItem('eventPoints')) {
+        const savedEventPoints = JSON.parse(localStorage.getItem('eventPoints'));
+
+        if (savedEventPoints.date === currentDate) {
+            eventPoints = savedEventPoints.count;
+        };
     };
 
     /*****************
@@ -216,8 +232,8 @@
     *   Interface   *
     ****************/
 
-    //Set Auto Go Active
-    var setAutoGoActive = function() {
+    // Set Auto Go Active
+    function setAutoGoActive() {
         sessionStorage.setItem('autoGoActive', true);
         document.getElementById("autoGoButton").innerHTML = 'STOP'
         document.getElementById("autoGoButton").removeEventListener ("click", setAutoGoActive);
@@ -225,8 +241,8 @@
         autoGo();
     };
 
-    //Set Auto Go Deactive
-    var setAutoGoDeactive = function() {
+    // Set Auto Go Deactive
+    function setAutoGoDeactive() {
         sessionStorage.setItem('autoGoActive', false);
         document.getElementById("autoGoButton").innerHTML = 'Auto GO'
         document.getElementById("autoGoButton").addEventListener ("click", setAutoGoActive);
@@ -243,10 +259,10 @@
         };
     };
 
-    //Open Settings
-    var openSettings = function(){
+    // Open Settings
+    function openSettings(){
 
-        var closeSettings = function() {
+        function closeSettings() {
             document.getElementById("settingsWindow").remove();
             document.getElementById("overlayBack").remove();
         };
@@ -344,22 +360,30 @@
                     <div>
                         <div class="settingsHeaderBig">${content.eventExpedition}</div>
                         <div class="settingsSubcontent">
-                            <div id="zzz" class="settingsButton">${content.soon}</div>
+                            <div id="doEventExpeditionTrue" class="settingsButton">${content.yes}</div>
+                            <div id="doEventExpeditionFalse" class="settingsButton">${content.no}</div>
+                        </div>
+                        <div class="settingsHeaderSmall">${content.opponent}</div>
+                        <div class="settingsSubcontent">
+                            <div id="setEventMonsterId0" class="settingsButton">1</div>
+                            <div id="setEventMonsterId1" class="settingsButton">2</div>
+                            <div id="setEventMonsterId2" class="settingsButton">3</div>
+                            <div id="setEventMonsterId3" class="settingsButton">Boss</div>
                         </div>
                     </div>
                 </div>`;
         document.getElementById("header_game").insertBefore(settingsWindow, document.getElementById("header_game").children[0]);
 
         var overlayBack = document.createElement("div");
-            var wrapperHeight = document.getElementById("wrapper_game").clientHeight;
+            const wrapperHeight = document.getElementById("wrapper_game").clientHeight;
             overlayBack.setAttribute("id", "overlayBack");
-            overlayBack.setAttribute("style", "height: " + wrapperHeight + "px;");
+            overlayBack.setAttribute("style", `height: ${wrapperHeight}px;`);
             overlayBack.addEventListener ("click", closeSettings);
         document.getElementsByTagName("body")[0].appendChild(overlayBack);
 
-        //Set Language
+        // Set Language
 
-        const setLanguage = function(language) {
+        function setLanguage(language) {
             localStorage.setItem('settings.language', language)
 
             switch (language) {
@@ -380,8 +404,7 @@
         $("#languageEN").click(function() { setLanguage('EN') });
         $("#languagePL").click(function() { setLanguage('PL') });
 
-
-        //Change Settings
+        // Change Settings
 
         function setDoExpedition(bool) {
             doExpedition = bool;
@@ -480,6 +503,26 @@
         $("#doExpeditionQuests").click(function() { setQuestTypes('expedition') });
         $("#doDungeonQuests").click(function() { setQuestTypes('dungeon') });
         $("#doItemsQuests").click(function() { setQuestTypes('items') });
+
+        function setDoEventExpedition(bool) {
+            doEventExpedition = bool;
+            localStorage.setItem('doEventExpedition', bool);
+            setActiveButtons();
+        };
+
+        $("#doEventExpeditionTrue").click(function() { setDoEventExpedition(true) });
+        $("#doEventExpeditionFalse").click(function() { setDoEventExpedition(false) });
+
+        function setEventMonster(id) {
+            eventMonsterId = id;
+            localStorage.setItem('eventMonsterId', id);
+            setActiveButtons();
+        };
+
+        $("#setEventMonsterId0").click(function() { setEventMonster('0') });
+        $("#setEventMonsterId1").click(function() { setEventMonster('1') });
+        $("#setEventMonsterId2").click(function() { setEventMonster('2') });
+        $("#setEventMonsterId3").click(function() { setEventMonster('3') });
 
         function setActiveButtons() {
             if (doExpedition == true){
@@ -615,13 +658,44 @@
             } else {
                 document.getElementById("doItemsQuests").classList.remove("settingsActive");
             }
+
+            if (doEventExpedition == true){
+                document.getElementById("doEventExpeditionTrue").classList.add("settingsActive")
+                document.getElementById("doEventExpeditionFalse").classList.remove("settingsDeactive")
+            } else {
+                document.getElementById("doEventExpeditionFalse").classList.add("settingsDeactive")
+                document.getElementById("doEventExpeditionTrue").classList.remove("settingsActive")
+            };
+    
+            if (eventMonsterId == 0){
+                document.getElementById("setEventMonsterId0").classList.add("settingsActive")
+                document.getElementById("setEventMonsterId1").classList.remove("settingsActive")
+                document.getElementById("setEventMonsterId2").classList.remove("settingsActive")
+                document.getElementById("setEventMonsterId3").classList.remove("settingsActive")
+            } else if (eventMonsterId == 1){
+                document.getElementById("setEventMonsterId1").classList.add("settingsActive")
+                document.getElementById("setEventMonsterId0").classList.remove("settingsActive")
+                document.getElementById("setEventMonsterId2").classList.remove("settingsActive")
+                document.getElementById("setEventMonsterId3").classList.remove("settingsActive")
+            } else if (eventMonsterId == 2){
+                document.getElementById("setEventMonsterId2").classList.add("settingsActive")
+                document.getElementById("setEventMonsterId0").classList.remove("settingsActive")
+                document.getElementById("setEventMonsterId1").classList.remove("settingsActive")
+                document.getElementById("setEventMonsterId3").classList.remove("settingsActive")
+            } else {
+                document.getElementById("setEventMonsterId3").classList.add("settingsActive")
+                document.getElementById("setEventMonsterId0").classList.remove("settingsActive")
+                document.getElementById("setEventMonsterId1").classList.remove("settingsActive")
+                document.getElementById("setEventMonsterId2").classList.remove("settingsActive")
+            };
         };
 
         setActiveButtons();
 
     };
 
-    //Auto GO button
+    // Auto GO button
+
     var autoGoButton = document.createElement("button");
     autoGoButton.setAttribute("id", "autoGoButton")
     autoGoButton.className = 'menuitem';
@@ -629,16 +703,15 @@
     if (autoGoActive == false){
         autoGoButton.innerHTML = 'Auto GO';
         autoGoButton.addEventListener ("click", setAutoGoActive);
-    }
-
-    else {
+    } else {
         autoGoButton.innerHTML = 'STOP';
         autoGoButton.addEventListener ("click", setAutoGoDeactive);
     };
 
     document.getElementById("mainmenu").insertBefore(autoGoButton, document.getElementById("mainmenu").children[0]);
 
-    //Settings button
+    // Settings button
+
     var settingsButton = document.createElement("button");
     settingsButton.className = 'menuitem';
     settingsButton.innerHTML = '<img src="https://image.flaticon.com/icons/svg/76/76716.svg" title="Ustawienia" height="20" width="20" style="filter: invert(83%) sepia(52%) saturate(503%) hue-rotate(85deg) brightness(103%) contrast(101%); z-index: 999;">';
@@ -690,7 +763,8 @@
     };
 
     function convertTimeToMs(t) {
-        var ms = Number(t.split(':')[0]) * 60 * 60 * 1000 + Number(t.split(':')[1]) * 60 * 1000 + Number(t.split(':')[2]) * 1000;
+        const ms = Number(t.split(':')[0]) * 60 * 60 * 1000 + Number(t.split(':')[1]) * 60 * 1000 + Number(t.split(':')[2]) * 1000;
+
         return ms;
     };
 
@@ -698,13 +772,14 @@
     *    Auto Go    *
     ****************/
 
-    var autoGo = function() {
+    function autoGo() {
 
-        //Click Delay 0.9 - 2.4 s
+        // Variables
 
+        const currentTime = new Date().getTime();
         const clickDelay = getRandomInt(900, 2400);
 
-        //Claim Daily Reward
+        // Claim Daily Reward
 
         if (document.getElementById("blackoutDialogLoginBonus") !== null) {
             setTimeout(function(){
@@ -712,9 +787,9 @@
             }, clickDelay);
         };
 
-        //Close Notifications
+        // Close Notifications
 
-        if (document.getElementById("blackoutDialognotification") !== null && document.getElementById("blackoutDialognotification").isDisplayed()) { //isVisible()
+        if (document.getElementById("blackoutDialognotification") !== null && document.getElementById("blackoutDialognotification").isDisplayed()) {
             setTimeout(function(){
                 document.getElementById("blackoutDialognotification").getElementsByTagName("input")[0].click();
             }, clickDelay);
@@ -724,7 +799,7 @@
         *   Use Food   *
         ***************/
 
-        if (healthPoints < 10) {
+        if (player.hp < 10) {
             console.log("Low health");
 
             var lowHealthAlert = document.createElement("div");
@@ -738,7 +813,7 @@
             };
             showLowHealthAlert();
 
-            //TODO
+            // @TODO
         }
 
         /****************
@@ -825,18 +900,14 @@
         * Go Expedition *
         ****************/
 
-        else if (doExpedition === true && document.getElementById("cooldown_bar_fill_expedition").classList.contains("cooldown_bar_fill_ready")===true) {
-            var goExpedition = function() {
+        else if (doExpedition === true && document.getElementById("cooldown_bar_fill_expedition").classList.contains("cooldown_bar_fill_ready") === true) {
+            function goExpedition() {
+                const inExpeditionPage = $("body").first().attr("id") === "locationPage";
+                const inEventExpeditionPage = document.getElementById("content").getElementsByTagName('img')[1].getAttribute('src') === 'img/ui/expedition_points2.png';
 
-                var expeditionPageCheck = document.getElementsByTagName("body")[0].id === "locationPage";
-
-                if (expeditionPageCheck === false) {
+                if (!inExpeditionPage || inEventExpeditionPage) {
                     document.getElementsByClassName("cooldown_bar_link")[0].click();
-                }
-
-                //document.getElementById("submenu2").getElementsByTagName("a")[1].getAttribute("href").contains("location&loc="+locationId);
-
-                else { 
+                } else { 
                     document.getElementsByClassName("expedition_button")[monsterId].click();
                 };
             };
@@ -851,27 +922,23 @@
         * Go Dungeon  *
         **************/
 
-        else if (doDungeon === true && document.getElementById("cooldown_bar_fill_dungeon").classList.contains("cooldown_bar_fill_ready")===true) {
-            var goDungeon = function() {
+        else if (doDungeon === true && document.getElementById("cooldown_bar_fill_dungeon").classList.contains("cooldown_bar_fill_ready") === true) {
+            function goDungeon() {
+                const inDungeonPage = $("body").first().attr("id") === "dungeonPage";
 
-                var dungeonPageCheck = document.getElementsByTagName("body")[0].id === "dungeonPage";
-
-                if (dungeonPageCheck === false) {
+                if (!inDungeonPage) {
                     document.getElementsByClassName("cooldown_bar_link")[1].click();
-                }
+                } else {
+                    const inSelectDifficultyPage = !document.getElementById("content").getElementsByTagName("area")[0];
 
-                else {
-                    if (document.getElementById("content").getElementsByClassName("button1")[0].value === "normalne") {
+                    if (inSelectDifficultyPage) {
                         if (dungeonDifficulty === "advanced") {
                             document.getElementById("content").getElementsByClassName("button1")[1].click();
-                        }
-                        else {
+                        } else {
                             document.getElementById("content").getElementsByClassName("button1")[0].click();
                         }
-                    }
-
-                    else {
-                        document.getElementsByTagName("area")[0].click();
+                    } else {
+                        document.getElementById("content").getElementsByTagName("area")[0].click();
                     };
                 };
             };
@@ -885,28 +952,20 @@
         * Go Arena Provinciarum *
         ************************/
 
-        else if (doArena === true && document.getElementById("cooldown_bar_fill_arena").classList.contains("cooldown_bar_fill_ready")===true) {
-            var goArena = function() {
+        else if (doArena === true && document.getElementById("cooldown_bar_fill_arena").classList.contains("cooldown_bar_fill_ready") === true) {
+            function goArena() {
+                const inArenaPage = document.getElementsByTagName("body")[0].id === "arenaPage";
 
-                var arenaPageCheck = document.getElementsByTagName("body")[0].id === "arenaPage";
-
-                if (arenaPageCheck === false && playerLevel < 10) {
+                if (!inArenaPage && player.level < 10) {
                     document.getElementsByClassName("cooldown_bar_link")[1].click();
-                }
-
-                else if (arenaPageCheck === false) {
+                } else if (!inArenaPage) {
                     document.getElementsByClassName("cooldown_bar_link")[2].click();
-                }
+                } else {
+                    const inArenaProvPage = document.getElementsByTagName("td")[1].firstChild.hasClass("awesome-tabs current");
 
-                else {
-
-                    var arenaProvPageCheck = document.getElementsByTagName("td")[1].firstChild.hasClass("awesome-tabs current");
-
-                    if (arenaProvPageCheck === false) {
+                    if (!inArenaProvPage) {
                         document.getElementsByTagName("td")[1].firstElementChild.click();
-                    }
-
-                    else { 
+                    } else { 
                         const levels = new Array();
                         levels[0] = Number(document.getElementById("own2").getElementsByTagName("td")[1].firstChild.nodeValue)
                         levels[1] = Number(document.getElementById("own2").getElementsByTagName("td")[5].firstChild.nodeValue)
@@ -931,7 +990,7 @@
 
             setTimeout(function(){
                 goArena();
-            }, clickDelay+600);
+            }, clickDelay + 600);
 
         }
 
@@ -939,24 +998,18 @@
         * Go Circus Provinciarum *
         *************************/
 
-        else if (doCircus === true && document.getElementById("cooldown_bar_fill_ct").classList.contains("cooldown_bar_fill_ready")===true) {
-            var goCircus = function() {
+        else if (doCircus === true && document.getElementById("cooldown_bar_fill_ct").classList.contains("cooldown_bar_fill_ready") === true) {
+            function goCircus() {
+                const inArenaPage = document.getElementsByTagName("body")[0].id === "arenaPage";
 
-                var arenaPageCheck = document.getElementsByTagName("body")[0].id === "arenaPage";
-
-                if (arenaPageCheck === false) {
+                if (!inArenaPage) {
                     document.getElementsByClassName("cooldown_bar_link")[3].click();
-                }
+                } else {
+                    const inCircusProvPage = document.getElementsByTagName("td")[3].firstChild.hasClass("awesome-tabs current");
 
-                else {
-
-                    var circusProvPageCheck = document.getElementsByTagName("td")[3].firstChild.hasClass("awesome-tabs current");
-
-                    if (circusProvPageCheck === false) {
+                    if (!inCircusProvPage) {
                         document.getElementsByTagName("td")[3].firstElementChild.click();
-                    }
-
-                    else { 
+                    } else { 
                         const levels = new Array();
                         levels[0] = Number(document.getElementById("own3").getElementsByTagName("td")[1].firstChild.nodeValue)
                         levels[1] = Number(document.getElementById("own3").getElementsByTagName("td")[5].firstChild.nodeValue)
@@ -981,7 +1034,7 @@
 
             setTimeout(function(){
                 goCircus();
-            }, clickDelay+600);
+            }, clickDelay + 600);
 
         }
 
@@ -989,49 +1042,42 @@
         *  Go Event Expedition  *
         ************************/
 
-        else if (doEventExpedition === true && eventExpeditionTimerDone===true && freeEventPoints > 0) {
-            var goEventExpedition = function() {
+        else if (doEventExpedition === true && nextEventExpeditionTime < currentTime && eventPoints > 0) {
+            function goEventExpedition() {
+                const inEventExpeditionPage = document.getElementById("submenu2").getElementsByClassName("menuitem active glow")[0];
 
-                var expeditionPageCheck = document.getElementsByTagName("body")[0].id === "locationPage";
-                var eventExpeditionNameCheck = document.getElementById("mainnav").getElementsByTagName("a")[0].firstChild.nodeValue;
-
-                if (expeditionPageCheck === false || document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].firstChild.nodeValue.contains(eventExpeditionNameCheck) === false) {
+                if (!inEventExpeditionPage) {
                     document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
-                }
+                } else {
+                    eventPoints = document.getElementById("content").getElementsByClassName("section-header")[0].getElementsByTagName("p")[1].firstChild.nodeValue.replace(/[^0-9]/gi, '')
+                    localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints, date: currentDate}));
 
-                else if (document.getElementById("content").getElementsByClassName("section-header")[0].getElementsByTagName("p")[1].firstChild.nodeValue.replace(/[^0-9]/gi, '') <= 0 ) {
-                    sessionStorage.setItem('freeEventPoints', 0); //sprawdzam czy jest co najmniej 1 punkt eventowy
-                    location.reload();
-                }
+                    const isTimer = $('#content .ticker').first()
 
-                else if (document.getElementById("content").getElementsByClassName("section-header")[1].getElementsByTagName("span")[0]===undefined) {
-                    freeEventPoints = document.getElementById("content").getElementsByClassName("section-header")[0].getElementsByTagName("p")[1].firstChild.nodeValue.replace(/[^0-9]/gi, '');
+                    if (isTimer.length) {
+                        nextEventExpeditionTime = currentTime + Number($('#content .ticker').first().attr('data-ticker-time-left'));
+                        localStorage.setItem('nextEventExpeditionTime', nextEventExpeditionTime);
 
-                    if (eventMonsterId == 3 && freeEventPoints == 1 ) {
-                        sessionStorage.setItem('freeEventPoints', 0);
-                        sessionStorage.setItem('eventExpeditionTimer', currentTime+301000);
+                        location.reload();
+                    } else if (eventPoints == 0) {
+                        location.reload();
+                    } else if (eventPoints == 1 && eventMonsterId == 3) {
+                        localStorage.setItem('eventPoints', JSON.stringify({count: 0, date: currentDate}));
+
                         document.getElementsByClassName("expedition_button")[2].click();
-                    }
-
-                    else {
-                        if (eventMonsterId == 3 && freeEventPoints > 1) {
-                            document.getElementsByClassName("expedition_button")[3].click();
-                            sessionStorage.setItem('freeEventPoints', freeEventPoints - 2);
-                            sessionStorage.setItem('eventExpeditionTimer', currentTime+301000);
+                    } else {
+                        if (eventMonsterId == 3) {
+                            localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints - 2, date: currentDate}));
+                        } else {
+                            localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints - 1, date: currentDate}));
                         }
-                        else {
-                            document.getElementsByClassName("expedition_button")[eventMonsterId].click();
-                            sessionStorage.setItem('freeEventPoints', freeEventPoints - 1);
-                            sessionStorage.setItem('eventExpeditionTimer', currentTime+301000);
-                        };
-                    };
-                }
 
-                else {
-                    //document.getElementById("content").getElementsByClassName("section-header")[1].getElementsByTagName("span")[0].firstChild.nodeValue.replace(/[^:0-9]/gi, '')
-                    sessionStorage.setItem('eventExpeditionTimer', currentTime+300000); //sprawdzam czy załadował się czas
-                    location.reload();
-                };
+                        nextEventExpeditionTime = currentTime + 303000;
+                        localStorage.setItem('nextEventExpeditionTime', nextEventExpeditionTime);
+
+                        document.getElementsByClassName("expedition_button")[eventMonsterId].click();
+                    }
+                }                
             };
 
             setTimeout(function(){
@@ -1050,7 +1096,7 @@
             *    Fast Mode    *
             ******************/
 
-            if (safeMode===false) {
+            if (safeMode === false) {
                 const actions = [];
     
                 if (doExpedition === true) {
@@ -1093,8 +1139,8 @@
                     });
                 };
 
-                if (doEventExpedition === true && freeEventPoints > 0) {
-                    const timeTo = sessionStorage.getItem('eventExpeditionTimer') - currentTime;
+                if (doEventExpedition === true && eventPoints > 0) {
+                    const timeTo = localStorage.getItem('nextEventExpeditionTime') - currentTime;
 
                     actions.push({
                         name: 'eventExpedition',
@@ -1111,9 +1157,6 @@
                         if (actions[i].time < minValue) {
                             minValue = actions[i].time;
                             index = i;
-
-                            console.log(actions[i].time)
-                            console.log(minValue)
                         }
                     };
                     return actions[index]
@@ -1184,14 +1227,14 @@
             *    Safe Mode    *
             ******************/
 
-            else {
-                //TODO
-                console.log("No safe mode yet")
-            };
+           else {
+            //TODO
+            console.log("No safe mode yet")
         };
     };
+};
 
-    if (autoGoActive == true) {
+    if (autoGoActive) {
         window.onload = autoGo();
     };
 
