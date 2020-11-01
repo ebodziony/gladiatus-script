@@ -1227,12 +1227,12 @@
             *    Safe Mode    *
             ******************/
 
-           else {
-            //TODO
-            console.log("No safe mode yet")
+            else {
+                //TODO
+                console.log("No safe mode yet")
+            };
         };
     };
-};
 
     if (autoGoActive) {
         window.onload = autoGo();

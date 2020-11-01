@@ -6,6 +6,7 @@
   - Auto arena provinciarum
   - Auto circus turma provinciarum
   - Auto quests in pantheon
+  - Auto event expeditions
   
 * Settings
   - Turn on/off every activity
