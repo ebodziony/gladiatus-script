@@ -56,7 +56,7 @@
     display: grid;
     margin-top: 20px;
     grid-template-columns: 50% 50%;
-    grid-template-rows: 180px 130px 70px;
+    grid-template-rows: 180px 130px 130px;
     width: 100%;
 }
 
@@ -101,39 +101,18 @@
 
 .settingsButton:hover
 {
-    /* color: #58ffbb; */
-    cursor: pointer;
-    /* box-shadow: 0 0 0 1px #58ffbb; */
     background: linear-gradient(to bottom, #C3AB6F, #DACFA2);
+    cursor: pointer;
 }
 
-.settingsActive
-{
+.settings_box.active .settingsButton.active {
     border: solid 1px #44dc46;
-    /* color: #58ffbb; */
     cursor: pointer;
-    /* box-shadow: 0 0 0 1px #44dc46; */
 }
 
-.settingsDeactive
-{
-    border: solid 1px rgb(234, 20, 20);
-    /* color: rgb(206, 69, 69); */
+.settings_box.inactive .settingsButton.active {
+    border: solid 1px #ea1414;
     cursor: pointer;
-    /* box-shadow: 0 0 0 1px rgb(234, 20, 20); */
-}
-
-.settingsDisabled
-{
-    color: #bcbcbc;
-    cursor: default;
-    border-color: #bdbdbd;
-    box-shadow: 0 0 0 1px #1d1d1d;
-    -moz-box-shadow: 0 0 0 1px #1d1d1d;
-    -webkit-box-shadow: 0 0 0 1px #1d1d1d;
-    background: #222;
-    background: -moz-linear-gradient(top,#272727,#121212);
-    background: linear-gradient(to bottom,#272727,#121212);
 }
 
 .quest-type {
@@ -152,7 +131,7 @@
     background-image: url(9379/img/ui/quest/icon_combat_inactive.jpg);
 }
 
-.quest-type.combat.settingsActive {
+.quest-type.combat.active {
     background-image: url(9379/img/ui/quest/icon_combat_active.jpg);
 }
 
@@ -160,7 +139,7 @@
     background-image: url(9379/img/ui/quest/icon_arena_inactive.jpg)
 }
 
-.quest-type.arena.settingsActive {
+.quest-type.arena.active {
     background-image: url(9379/img/ui/quest/icon_arena_active.jpg)
 }
 
@@ -168,7 +147,7 @@
     background-image: url(9379/img/ui/quest/icon_grouparena_inactive.jpg)
 }
 
-.quest-type.circus.settingsActive {
+.quest-type.circus.active {
     background-image: url(9379/img/ui/quest/icon_grouparena_active.jpg)
 }
 
@@ -176,7 +155,7 @@
     background-image: url(9379/img/ui/quest/icon_expedition_inactive.jpg)
 }
 
-.quest-type.expedition.settingsActive {
+.quest-type.expedition.active {
     background-image: url(9379/img/ui/quest/icon_expedition_active.jpg)
 }
 
@@ -184,7 +163,7 @@
     background-image: url(9379/img/ui/quest/icon_dungeon_inactive.jpg)
 }
 
-.quest-type.dungeon.settingsActive {
+.quest-type.dungeon.active {
     background-image: url(9379/img/ui/quest/icon_dungeon_active.jpg)
 }
 
@@ -192,7 +171,7 @@
     background-image: url(9379/img/ui/quest/icon_items_inactive.jpg)
 }
 
-.quest-type.items.settingsActive {
+.quest-type.items.active {
     background-image: url(9379/img/ui/quest/icon_items_active.jpg)
 }
 

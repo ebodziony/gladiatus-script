@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.4
+// @version      2.41
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -10,7 +10,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.35
+// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.41
 // ==/UserScript==
 
 
@@ -22,7 +22,7 @@
     function addCustomCSS() {
         const globalCSS = GM_getResourceText("customCSS_global");
         GM_addStyle(globalCSS);
-    }
+    };
     
     addCustomCSS();
 
@@ -30,10 +30,7 @@
     *     Global     *
     *****************/  
 
-    let autoGoActive = false;
-    if (sessionStorage.getItem('autoGoActive')) {
-        autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
-    };
+    let autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
 
     const currentDate = $("#server-time").html().split(',')[0];
 
@@ -94,10 +91,7 @@
     if (player.level < 10) {
         doDungeon = false;
     };
-    let dungeonDifficulty = "normal";
-    if (localStorage.getItem('dungeonDifficulty')) {
-        dungeonDifficulty = localStorage.getItem('dungeonDifficulty');
-    };
+    let dungeonDifficulty = localStorage.getItem('dungeonDifficulty') === 'advanced' ? 'advanced' : 'normal';
 
     // Arena
 
@@ -237,16 +231,16 @@
         sessionStorage.setItem('autoGoActive', true);
         document.getElementById("autoGoButton").innerHTML = 'STOP'
         document.getElementById("autoGoButton").removeEventListener ("click", setAutoGoActive);
-        document.getElementById("autoGoButton").addEventListener ("click", setAutoGoDeactive);
+        document.getElementById("autoGoButton").addEventListener ("click", setAutoGoInactive);
         autoGo();
     };
 
-    // Set Auto Go Deactive
-    function setAutoGoDeactive() {
+    // Set Auto Go Inactive
+    function setAutoGoInactive() {
         sessionStorage.setItem('autoGoActive', false);
         document.getElementById("autoGoButton").innerHTML = 'Auto GO'
         document.getElementById("autoGoButton").addEventListener ("click", setAutoGoActive);
-        document.getElementById("autoGoButton").removeEventListener ("click", setAutoGoDeactive);
+        document.getElementById("autoGoButton").removeEventListener ("click", setAutoGoInactive);
 
         clearTimeout(setTimeout);
 
@@ -276,99 +270,117 @@
                 </span>
                 <span id="settingsHeader">${content.settings}</span>
                 <div id="settingsContent">
-                    <div>
+                    <div
+                        id="expedition_settings"
+                        class="settings_box"
+                    >
                         <div class="settingsHeaderBig">${content.expedition}</div>
                         <div class="settingsSubcontent">
-                            <div id="doExpeditionTrue" class="settingsButton">${content.yes}</div>
-                            <div id="doExpeditionFalse" class="settingsButton">${content.no}</div>
+                            <div id="do_expedition_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_expedition_false" class="settingsButton">${content.no}</div>
                         </div>
                         <div class="settingsHeaderSmall">${content.opponent}</div>
                         <div class="settingsSubcontent">
-                            <div id="setMonsterId0" class="settingsButton">1</div>
-                            <div id="setMonsterId1" class="settingsButton">2</div>
-                            <div id="setMonsterId2" class="settingsButton">3</div>
-                            <div id="setMonsterId3" class="settingsButton">Boss</div>
+                            <div id="set_monster_id_0" class="settingsButton">1</div>
+                            <div id="set_monster_id_1" class="settingsButton">2</div>
+                            <div id="set_monster_id_2" class="settingsButton">3</div>
+                            <div id="set_monster_id_3" class="settingsButton">Boss</div>
                         </div>
                         <div class="settingsHeaderSmall">${content.location}</div>
                         <div class="settingsSubcontent">
-                            <div id="expeditionLocation" class="settingsButton">${content.lastUsed}</div>
+                            <div id="set_expedition_location" class="settingsButton">${content.lastUsed}</div>
                         </div>
                     </div>
 
-                    <div>
+                    <div
+                        id="dungeon_settings"
+                        class="settings_box"
+                    >
                         <div class="settingsHeaderBig">${content.dungeon}</div>
                         <div class="settingsSubcontent">
-                            <div id="doDungeonTrue" class="settingsButton">${content.yes}</div>
-                            <div id="doDungeonFalse" class="settingsButton">${content.no}</div>
+                            <div id="do_dungeon_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_dungeon_false" class="settingsButton">${content.no}</div>
                         </div>
                         <div class="settingsHeaderSmall">${content.difficulty}</div>
                         <div class="settingsSubcontent">
-                            <div id="setDungeonDifficultyNormal" class="settingsButton">${content.normal}</div>
-                            <div id="setDungeonDifficultyAdvanced" class="settingsButton">${content.advanced}</div>
+                            <div id="set_dungeon_difficulty_normal" class="settingsButton">${content.normal}</div>
+                            <div id="set_dungeon_difficulty_advanced" class="settingsButton">${content.advanced}</div>
                         </div>
                         <div class="settingsHeaderSmall">${content.location}</div>
                         <div class="settingsSubcontent">
-                            <div id="dungeonLocation" class="settingsButton">${content.lastUsed}</div>
+                            <div id="set_dungeon_location" class="settingsButton">${content.lastUsed}</div>
                         </div>
                     </div>
 
-                    <div>
+                    <div
+                        id="arena_settings"
+                        class="settings_box"
+                    >
                         <div class="settingsHeaderBig">${content.arena}</div>
                         <div class="settingsSubcontent">
-                            <div id="doArenaTrue" class="settingsButton">${content.yes}</div>
-                            <div id="doArenaFalse" class="settingsButton">${content.no}</div>
+                            <div id="do_arena_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_arena_false" class="settingsButton">${content.no}</div>
                         </div>
                         <div class="settingsHeaderSmall">${content.opponentLevel}</div>
                         <div class="settingsSubcontent">
-                            <div id="setArenaOpponentLevelMin" class="settingsButton">${content.lowest}</div>
-                            <div id="setArenaOpponentLevelMax" class="settingsButton">${content.highest}</div>
-                            <div id="setArenaOpponentLevelRandom" class="settingsButton">${content.random}</div>
+                            <div id="set_arena_opponent_level_min" class="settingsButton">${content.lowest}</div>
+                            <div id="set_arena_opponent_level_max" class="settingsButton">${content.highest}</div>
+                            <div id="set_arena_opponent_level_random" class="settingsButton">${content.random}</div>
                         </div>
                     </div>
 
-                    <div>
+                    <div
+                        id="circus_settings"
+                        class="settings_box"
+                    >
                         <div class="settingsHeaderBig">${content.circusTurma}</div>
                         <div class="settingsSubcontent">
-                            <div id="doCircusTrue" class="settingsButton">${content.yes}</div>
-                            <div id="doCircusFalse" class="settingsButton">${content.no}</div>
+                            <div id="do_circus_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_circus_false" class="settingsButton">${content.no}</div>
                         </div>
                         <div class="settingsHeaderSmall">${content.opponentLevel}</div>
                         <div class="settingsSubcontent">
-                            <div id="setCircusOpponentLevelMin" class="settingsButton">${content.lowest}</div>
-                            <div id="setCircusOpponentLevelMax" class="settingsButton">${content.highest}</div>
-                            <div id="setCircusOpponentLevelRandom" class="settingsButton">${content.random}</div>
+                            <div id="set_circus_opponent_level_min" class="settingsButton">${content.lowest}</div>
+                            <div id="set_circus_opponent_level_max" class="settingsButton">${content.highest}</div>
+                            <div id="set_circus_opponent_level_random" class="settingsButton">${content.random}</div>
                         </div>
                     </div>
 
-                    <div>
+                    <div
+                        id="quests_settings"
+                        class="settings_box"
+                    >
                         <div class="settingsHeaderBig">${content.quests}</div>
                         <div class="settingsSubcontent">
-                            <div id="doQuestsTrue" class="settingsButton">${content.yes}</div>
-                            <div id="doQuestsFalse" class="settingsButton">${content.no}</div>
+                            <div id="do_quests_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_quests_false" class="settingsButton">${content.no}</div>
                         </div>
                         <div class="settingsHeaderSmall">${content.type}</div>
                         <div class="settingsSubcontent">
-                            <div id="doCombatQuests" class="settingsButton quest-type combat"></div>
-                            <div id="doArenaQuests" class="settingsButton quest-type arena"></div>
-                            <div id="doCircusQuests" class="settingsButton quest-type circus"></div>
-                            <div id="doExpeditionQuests" class="settingsButton quest-type expedition"></div>
-                            <div id="doDungeonQuests" class="settingsButton quest-type dungeon"></div>
-                            <div id="doItemsQuests" class="settingsButton quest-type items"></div>
+                            <div id="do_combat_quests" class="settingsButton quest-type combat"></div>
+                            <div id="do_arena_quests" class="settingsButton quest-type arena"></div>
+                            <div id="do_circus_quests" class="settingsButton quest-type circus"></div>
+                            <div id="do_expedition_quests" class="settingsButton quest-type expedition"></div>
+                            <div id="do_dungeon_quests" class="settingsButton quest-type dungeon"></div>
+                            <div id="do_items_quests" class="settingsButton quest-type items"></div>
                         </div>
                     </div>
 
-                    <div>
+                    <div
+                        id="event_expedition_settings"
+                        class="settings_box"
+                    >
                         <div class="settingsHeaderBig">${content.eventExpedition}</div>
                         <div class="settingsSubcontent">
-                            <div id="doEventExpeditionTrue" class="settingsButton">${content.yes}</div>
-                            <div id="doEventExpeditionFalse" class="settingsButton">${content.no}</div>
+                            <div id="do_event_expedition_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_event_expedition_false" class="settingsButton">${content.no}</div>
                         </div>
                         <div class="settingsHeaderSmall">${content.opponent}</div>
                         <div class="settingsSubcontent">
-                            <div id="setEventMonsterId0" class="settingsButton">1</div>
-                            <div id="setEventMonsterId1" class="settingsButton">2</div>
-                            <div id="setEventMonsterId2" class="settingsButton">3</div>
-                            <div id="setEventMonsterId3" class="settingsButton">Boss</div>
+                            <div id="set_event_monster_id_0" class="settingsButton">1</div>
+                            <div id="set_event_monster_id_1" class="settingsButton">2</div>
+                            <div id="set_event_monster_id_2" class="settingsButton">3</div>
+                            <div id="set_event_monster_id_3" class="settingsButton">Boss</div>
                         </div>
                     </div>
                 </div>`;
@@ -395,10 +407,9 @@
                     break;
                 default:
                     content = { ...contentEN }
-            }
+            };
 
-            closeSettings();
-            openSettings();
+            reloadSettings();
         };
 
         $("#languageEN").click(function() { setLanguage('EN') });
@@ -409,289 +420,158 @@
         function setDoExpedition(bool) {
             doExpedition = bool;
             localStorage.setItem('doExpedition', bool);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#doExpeditionTrue").click(function() { setDoExpedition(true) });
-        $("#doExpeditionFalse").click(function() { setDoExpedition(false) });
+        $("#do_expedition_true").click(function() { setDoExpedition(true) });
+        $("#do_expedition_false").click(function() { setDoExpedition(false) });
 
         function setMonster(id) {
             monsterId = id;
             localStorage.setItem('monsterId', id);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#setMonsterId0").click(function() { setMonster('0') });
-        $("#setMonsterId1").click(function() { setMonster('1') });
-        $("#setMonsterId2").click(function() { setMonster('2') });
-        $("#setMonsterId3").click(function() { setMonster('3') });
+        $("#set_monster_id_0").click(function() { setMonster('0') });
+        $("#set_monster_id_1").click(function() { setMonster('1') });
+        $("#set_monster_id_2").click(function() { setMonster('2') });
+        $("#set_monster_id_3").click(function() { setMonster('3') });
 
         function setDoDungeon(bool) {
             doDungeon = bool;
             localStorage.setItem('doDungeon', bool);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#doDungeonTrue").click(function() { setDoDungeon(true) });
-        $("#doDungeonFalse").click(function() { setDoDungeon(false) });
+        $("#do_dungeon_true").click(function() { setDoDungeon(true) });
+        $("#do_dungeon_false").click(function() { setDoDungeon(false) });
 
         function setDungeonDifficulty(difficulty) {
             dungeonDifficulty = difficulty;
             localStorage.setItem('dungeonDifficulty', difficulty);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#setDungeonDifficultyNormal").click(function() { setDungeonDifficulty("normal") });
-        $("#setDungeonDifficultyAdvanced").click(function() { setDungeonDifficulty("advanced") });
+        $("#set_dungeon_difficulty_normal").click(function() { setDungeonDifficulty("normal") });
+        $("#set_dungeon_difficulty_advanced").click(function() { setDungeonDifficulty("advanced") });
 
         function setDoArena(bool) {
             doArena = bool;
             localStorage.setItem('doArena', bool);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#doArenaTrue").click(function() { setDoArena(true) });
-        $("#doArenaFalse").click(function() { setDoArena(false) });
+        $("#do_arena_true").click(function() { setDoArena(true) });
+        $("#do_arena_false").click(function() { setDoArena(false) });
 
         function setArenaOpponentLevel(level) {
             arenaOpponentLevel = level;
             localStorage.setItem('arenaOpponentLevel', level);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#setArenaOpponentLevelMin").click(function() { setArenaOpponentLevel('min') });
-        $("#setArenaOpponentLevelMax").click(function() { setArenaOpponentLevel('max') });
-        $("#setArenaOpponentLevelRandom").click(function() { setArenaOpponentLevel('random') });
+        $("#set_arena_opponent_level_min").click(function() { setArenaOpponentLevel('min') });
+        $("#set_arena_opponent_level_max").click(function() { setArenaOpponentLevel('max') });
+        $("#set_arena_opponent_level_random").click(function() { setArenaOpponentLevel('random') });
 
         function setDoCircus(bool) {
             doCircus = bool;
             localStorage.setItem('doCircus', bool);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#doCircusTrue").click(function() { setDoCircus(true) });
-        $("#doCircusFalse").click(function() { setDoCircus(false) });
+        $("#do_circus_true").click(function() { setDoCircus(true) });
+        $("#do_circus_false").click(function() { setDoCircus(false) });
 
         function setCircusOpponentLevel(level) {
             circusOpponentLevel = level;
             localStorage.setItem('circusOpponentLevel', level);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#setCircusOpponentLevelMin").click(function() { setCircusOpponentLevel('min') });
-        $("#setCircusOpponentLevelMax").click(function() { setCircusOpponentLevel('max') });
-        $("#setCircusOpponentLevelRandom").click(function() { setCircusOpponentLevel('random') });
+        $("#set_circus_opponent_level_min").click(function() { setCircusOpponentLevel('min') });
+        $("#set_circus_opponent_level_max").click(function() { setCircusOpponentLevel('max') });
+        $("#set_circus_opponent_level_random").click(function() { setCircusOpponentLevel('random') });
 
         function setDoQuests(bool) {
             doQuests = bool;
             localStorage.setItem('doQuests', bool);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#doQuestsTrue").click(function() { setDoQuests(true) });
-        $("#doQuestsFalse").click(function() { setDoQuests(false) });
+        $("#do_quests_true").click(function() { setDoQuests(true) });
+        $("#do_quests_false").click(function() { setDoQuests(false) });
 
         function setQuestTypes(type) {
             questTypes[type] = !questTypes[type];
             localStorage.setItem('questTypes', JSON.stringify(questTypes));
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#doCombatQuests").click(function() { setQuestTypes('combat') });
-        $("#doArenaQuests").click(function() { setQuestTypes('arena') });
-        $("#doCircusQuests").click(function() { setQuestTypes('circus') });
-        $("#doExpeditionQuests").click(function() { setQuestTypes('expedition') });
-        $("#doDungeonQuests").click(function() { setQuestTypes('dungeon') });
-        $("#doItemsQuests").click(function() { setQuestTypes('items') });
+        $("#do_combat_quests").click(function() { setQuestTypes('combat') });
+        $("#do_arena_quests").click(function() { setQuestTypes('arena') });
+        $("#do_circus_quests").click(function() { setQuestTypes('circus') });
+        $("#do_expedition_quests").click(function() { setQuestTypes('expedition') });
+        $("#do_dungeon_quests").click(function() { setQuestTypes('dungeon') });
+        $("#do_items_quests").click(function() { setQuestTypes('items') });
 
         function setDoEventExpedition(bool) {
             doEventExpedition = bool;
             localStorage.setItem('doEventExpedition', bool);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#doEventExpeditionTrue").click(function() { setDoEventExpedition(true) });
-        $("#doEventExpeditionFalse").click(function() { setDoEventExpedition(false) });
+        $("#do_event_expedition_true").click(function() { setDoEventExpedition(true) });
+        $("#do_event_expedition_false").click(function() { setDoEventExpedition(false) });
 
         function setEventMonster(id) {
             eventMonsterId = id;
             localStorage.setItem('eventMonsterId', id);
-            setActiveButtons();
+            reloadSettings();
         };
 
-        $("#setEventMonsterId0").click(function() { setEventMonster('0') });
-        $("#setEventMonsterId1").click(function() { setEventMonster('1') });
-        $("#setEventMonsterId2").click(function() { setEventMonster('2') });
-        $("#setEventMonsterId3").click(function() { setEventMonster('3') });
+        $("#set_event_monster_id_0").click(function() { setEventMonster('0') });
+        $("#set_event_monster_id_1").click(function() { setEventMonster('1') });
+        $("#set_event_monster_id_2").click(function() { setEventMonster('2') });
+        $("#set_event_monster_id_3").click(function() { setEventMonster('3') });
+
+        function reloadSettings() {
+            closeSettings();
+            openSettings();
+        }
 
         function setActiveButtons() {
-            if (doExpedition == true){
-                document.getElementById("doExpeditionTrue").classList.add("settingsActive")
-                document.getElementById("doExpeditionFalse").classList.remove("settingsDeactive")
-            } else {
-                document.getElementById("doExpeditionFalse").classList.add("settingsDeactive")
-                document.getElementById("doExpeditionTrue").classList.remove("settingsActive")
-            };
-    
-            if (monsterId == 0){
-                document.getElementById("setMonsterId0").classList.add("settingsActive")
-                document.getElementById("setMonsterId1").classList.remove("settingsActive")
-                document.getElementById("setMonsterId2").classList.remove("settingsActive")
-                document.getElementById("setMonsterId3").classList.remove("settingsActive")
-            } else if (monsterId == 1){
-                document.getElementById("setMonsterId1").classList.add("settingsActive")
-                document.getElementById("setMonsterId0").classList.remove("settingsActive")
-                document.getElementById("setMonsterId2").classList.remove("settingsActive")
-                document.getElementById("setMonsterId3").classList.remove("settingsActive")
-            } else if (monsterId == 2){
-                document.getElementById("setMonsterId2").classList.add("settingsActive")
-                document.getElementById("setMonsterId0").classList.remove("settingsActive")
-                document.getElementById("setMonsterId1").classList.remove("settingsActive")
-                document.getElementById("setMonsterId3").classList.remove("settingsActive")
-            } else {
-                document.getElementById("setMonsterId3").classList.add("settingsActive")
-                document.getElementById("setMonsterId0").classList.remove("settingsActive")
-                document.getElementById("setMonsterId1").classList.remove("settingsActive")
-                document.getElementById("setMonsterId2").classList.remove("settingsActive")
-            };
-    
-            if (doDungeon == true){
-                document.getElementById("doDungeonTrue").classList.add("settingsActive")
-                document.getElementById("doDungeonFalse").classList.remove("settingsDeactive")
-            } else {
-                document.getElementById("doDungeonFalse").classList.add("settingsDeactive")
-                document.getElementById("doDungeonTrue").classList.remove("settingsActive")
-            };
-    
-            if (dungeonDifficulty == "advanced"){
-                document.getElementById("setDungeonDifficultyAdvanced").classList.add("settingsActive")
-                document.getElementById("setDungeonDifficultyNormal").classList.remove("settingsActive")
-            } else {
-                document.getElementById("setDungeonDifficultyNormal").classList.add("settingsActive")
-                document.getElementById("setDungeonDifficultyAdvanced").classList.remove("settingsActive")
-            };
-    
-            if (doArena == true){
-                document.getElementById("doArenaTrue").classList.add("settingsActive")
-                document.getElementById("doArenaFalse").classList.remove("settingsDeactive")
-            } else {
-                document.getElementById("doArenaFalse").classList.add("settingsDeactive")
-                document.getElementById("doArenaTrue").classList.remove("settingsActive")
-            };
+            $('#expedition_settings').addClass(doExpedition ? 'active' : 'inactive');
+            $(`#do_expedition_${doExpedition}`).addClass('active');
+            $(`#set_monster_id_${monsterId}`).addClass('active');
 
-            if (arenaOpponentLevel == "min"){
-                document.getElementById("setArenaOpponentLevelMin").classList.add("settingsActive")
-                document.getElementById("setArenaOpponentLevelMax").classList.remove("settingsActive")
-                document.getElementById("setArenaOpponentLevelRandom").classList.remove("settingsActive")
-            } else if (arenaOpponentLevel == "max"){
-                document.getElementById("setArenaOpponentLevelMax").classList.add("settingsActive")
-                document.getElementById("setArenaOpponentLevelMin").classList.remove("settingsActive")
-                document.getElementById("setArenaOpponentLevelRandom").classList.remove("settingsActive")
-            } else {
-                document.getElementById("setArenaOpponentLevelRandom").classList.add("settingsActive")
-                document.getElementById("setArenaOpponentLevelMin").classList.remove("settingsActive")
-                document.getElementById("setArenaOpponentLevelMax").classList.remove("settingsActive")
-            }
-    
-            if (doCircus == true){
-                document.getElementById("doCircusTrue").classList.add("settingsActive")
-                document.getElementById("doCircusFalse").classList.remove("settingsDeactive")
-            } else {
-                document.getElementById("doCircusFalse").classList.add("settingsDeactive")
-                document.getElementById("doCircusTrue").classList.remove("settingsActive")
-            };
+            $('#dungeon_settings').addClass(doDungeon ? 'active' : 'inactive');
+            $(`#do_dungeon_${doDungeon}`).addClass('active');
+            $(`#set_dungeon_difficulty_${dungeonDifficulty}`).addClass('active');
 
-            if (circusOpponentLevel == "min"){
-                document.getElementById("setCircusOpponentLevelMin").classList.add("settingsActive")
-                document.getElementById("setCircusOpponentLevelMax").classList.remove("settingsActive")
-                document.getElementById("setCircusOpponentLevelRandom").classList.remove("settingsActive")
-            } else if (circusOpponentLevel == "max"){
-                document.getElementById("setCircusOpponentLevelMax").classList.add("settingsActive")
-                document.getElementById("setCircusOpponentLevelMin").classList.remove("settingsActive")
-                document.getElementById("setCircusOpponentLevelRandom").classList.remove("settingsActive")
-            } else {
-                document.getElementById("setCircusOpponentLevelRandom").classList.add("settingsActive")
-                document.getElementById("setCircusOpponentLevelMin").classList.remove("settingsActive")
-                document.getElementById("setCircusOpponentLevelMax").classList.remove("settingsActive")
+            $('#arena_settings').addClass(doArena ? 'active' : 'inactive');
+            $(`#do_arena_${doArena}`).addClass('active');
+            $(`#set_arena_opponent_level_${arenaOpponentLevel}`).addClass('active');
+
+            $('#circus_settings').addClass(doCircus ? 'active' : 'inactive');
+            $(`#do_circus_${doCircus}`).addClass('active');
+            $(`#set_circus_opponent_level_${circusOpponentLevel}`).addClass('active');
+
+            $('#quests_settings').addClass(doQuests ? 'active' : 'inactive');
+            $(`#do_quests_${doQuests}`).addClass('active');
+            
+            for (const type in questTypes) {
+                if (questTypes[type]) {
+                    $(`#do_${type}_quests`).addClass('active');
+                }
             }
 
-            if (doQuests == true){
-                document.getElementById("doQuestsTrue").classList.add("settingsActive")
-                document.getElementById("doQuestsFalse").classList.remove("settingsDeactive")
-            } else {
-                document.getElementById("doQuestsFalse").classList.add("settingsDeactive")
-                document.getElementById("doQuestsTrue").classList.remove("settingsActive")
-            };
-
-            if (questTypes.combat == true){
-                document.getElementById("doCombatQuests").classList.add("settingsActive");
-            } else {
-                document.getElementById("doCombatQuests").classList.remove("settingsActive");
-            }
-
-            if (questTypes.arena == true){
-                document.getElementById("doArenaQuests").classList.add("settingsActive");
-            } else {
-                document.getElementById("doArenaQuests").classList.remove("settingsActive");
-            }
-
-            if (questTypes.circus == true){
-                document.getElementById("doCircusQuests").classList.add("settingsActive");
-            } else {
-                document.getElementById("doCircusQuests").classList.remove("settingsActive");
-            }
-
-            if (questTypes.expedition == true){
-                document.getElementById("doExpeditionQuests").classList.add("settingsActive");
-            } else {
-                document.getElementById("doExpeditionQuests").classList.remove("settingsActive");
-            }
-
-            if (questTypes.dungeon == true){
-                document.getElementById("doDungeonQuests").classList.add("settingsActive");
-            } else {
-                document.getElementById("doDungeonQuests").classList.remove("settingsActive");
-            }
-
-            if (questTypes.items == true){
-                document.getElementById("doItemsQuests").classList.add("settingsActive");
-            } else {
-                document.getElementById("doItemsQuests").classList.remove("settingsActive");
-            }
-
-            if (doEventExpedition == true){
-                document.getElementById("doEventExpeditionTrue").classList.add("settingsActive")
-                document.getElementById("doEventExpeditionFalse").classList.remove("settingsDeactive")
-            } else {
-                document.getElementById("doEventExpeditionFalse").classList.add("settingsDeactive")
-                document.getElementById("doEventExpeditionTrue").classList.remove("settingsActive")
-            };
-    
-            if (eventMonsterId == 0){
-                document.getElementById("setEventMonsterId0").classList.add("settingsActive")
-                document.getElementById("setEventMonsterId1").classList.remove("settingsActive")
-                document.getElementById("setEventMonsterId2").classList.remove("settingsActive")
-                document.getElementById("setEventMonsterId3").classList.remove("settingsActive")
-            } else if (eventMonsterId == 1){
-                document.getElementById("setEventMonsterId1").classList.add("settingsActive")
-                document.getElementById("setEventMonsterId0").classList.remove("settingsActive")
-                document.getElementById("setEventMonsterId2").classList.remove("settingsActive")
-                document.getElementById("setEventMonsterId3").classList.remove("settingsActive")
-            } else if (eventMonsterId == 2){
-                document.getElementById("setEventMonsterId2").classList.add("settingsActive")
-                document.getElementById("setEventMonsterId0").classList.remove("settingsActive")
-                document.getElementById("setEventMonsterId1").classList.remove("settingsActive")
-                document.getElementById("setEventMonsterId3").classList.remove("settingsActive")
-            } else {
-                document.getElementById("setEventMonsterId3").classList.add("settingsActive")
-                document.getElementById("setEventMonsterId0").classList.remove("settingsActive")
-                document.getElementById("setEventMonsterId1").classList.remove("settingsActive")
-                document.getElementById("setEventMonsterId2").classList.remove("settingsActive")
-            };
+            $('#event_expedition_settings').addClass(doEventExpedition ? 'active' : 'inactive');
+            $(`#do_event_expedition_${doEventExpedition}`).addClass('active');
+            $(`#set_event_monster_id_${eventMonsterId}`).addClass('active');
         };
 
         setActiveButtons();
-
     };
 
     // Auto GO button
@@ -705,7 +585,7 @@
         autoGoButton.addEventListener ("click", setAutoGoActive);
     } else {
         autoGoButton.innerHTML = 'STOP';
-        autoGoButton.addEventListener ("click", setAutoGoDeactive);
+        autoGoButton.addEventListener ("click", setAutoGoInactive);
     };
 
     document.getElementById("mainmenu").insertBefore(autoGoButton, document.getElementById("mainmenu").children[0]);
@@ -806,9 +686,22 @@
 
             function showLowHealthAlert() {
                 lowHealthAlert.setAttribute("id", "lowHealth")
-                lowHealthAlert.setAttribute("style", "width: 365px; padding: 20px 0; color: #58ffbb; font-size: 20px; background-color: #000000aa; border-radius: 15px; display: block; position: absolute; left: 506px; top: 120px; z-index: 999;" );
-                lowHealthAlert.innerHTML = `
-                    <span style="color: #ea1414;">Low Health!</span>`;
+                lowHealthAlert.setAttribute("style", `
+                    display: block;
+                    position: absolute;
+                    top: 120px;
+                    left: 506px;
+                    width: 365px;
+                    padding: 20px 0;
+                    color: #ea1414;
+                    background-color: #000000db;
+                    font-size: 20px;
+                    border-radius: 25px;
+                    border-left: 10px solid #ea1414;
+                    border-right: 10px solid #ea1414;
+                    z-index: 999;
+                `);
+                lowHealthAlert.innerHTML = '<span>Low Health!</span>';
                 document.getElementById("header_game").insertBefore(lowHealthAlert, document.getElementById("header_game").children[0]);
             };
             showLowHealthAlert();
@@ -1163,6 +1056,8 @@
                 };
 
                 const nextAction = getNextAction(actions);
+
+                // @TODO fix nextAction if !actions.length
     
                 function formatTime(timeInMs) {
                     if (timeInMs < 1000) {
@@ -1189,7 +1084,22 @@
     
                 function showNextActionWindow() {
                     nextActionWindow.setAttribute("id", "nextActionWindow")
-                    nextActionWindow.setAttribute("style", "height: 72px; width: 365px; padding-top: 13px; color: #58ffbb; font-size: 20px; background-color: #000000aa; border-radius: 15px; display: block; position: absolute; left: 506px; top: 120px; z-index: 999;" );
+                    nextActionWindow.setAttribute("style", `
+                        display: block;
+                        position: absolute;
+                        top: 120px;
+                        left: 506px;
+                        height: 72px;
+                        width: 365px;
+                        padding-top: 13px;
+                        color: #58ffbb;
+                        background-color: #000000db;
+                        font-size: 20px;
+                        border-radius: 20px;
+                        border-left: 10px solid #58ffbb;
+                        border-right: 10px solid #58ffbb;
+                        z-index: 999;
+                    `);
                     nextActionWindow.innerHTML = `
                         <span style="color: #fff;">${content.nextAction}: </span>
                         <span>${content[nextAction.name]}</span></br>
