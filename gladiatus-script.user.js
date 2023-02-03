@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.41
+// @version      2.52
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -10,7 +10,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.41
+// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.52
 // ==/UserScript==
 
 
@@ -29,6 +29,8 @@
     /*****************
     *     Global     *
     *****************/  
+
+    const assetsUrl = 'https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets';
 
     let autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
 
@@ -265,8 +267,8 @@
             settingsWindow.setAttribute("id", "settingsWindow")
             settingsWindow.innerHTML = `
                 <span id="settingsLanguage">
-                    <img id="languageEN" src="https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/GB.png">
-                    <img id="languagePL" src="https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/PL.png">
+                    <img id="languageEN" src="${assetsUrl}/GB.png">
+                    <img id="languagePL" src="${assetsUrl}/PL.png">
                 </span>
                 <span id="settingsHeader">${content.settings}</span>
                 <div id="settingsContent">
@@ -594,8 +596,8 @@
 
     var settingsButton = document.createElement("button");
     settingsButton.className = 'menuitem';
-    settingsButton.innerHTML = '<img src="https://image.flaticon.com/icons/svg/76/76716.svg" title="Ustawienia" height="20" width="20" style="filter: invert(83%) sepia(52%) saturate(503%) hue-rotate(85deg) brightness(103%) contrast(101%); z-index: 999;">';
-    settingsButton.setAttribute("style", "height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')" );
+    settingsButton.innerHTML = `<img src="${assetsUrl}/cog.svg" title="Ustawienia" height="20" width="20" style="filter: invert(83%) sepia(52%) saturate(503%) hue-rotate(85deg) brightness(103%) contrast(101%); z-index: 999;">`;
+    settingsButton.setAttribute("style", "display: flex; justify-content: center; align-items: center; height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')" );
     settingsButton.addEventListener ("click", openSettings);
     document.getElementById("mainmenu").insertBefore(settingsButton, document.getElementById("mainmenu").children[1]);
 
@@ -745,7 +747,31 @@
 
                 if (canTakeQuest.length) {
                     function getIconName(url) {
-                        return url.split("/quest/icon_")[1].split("_inactive")[0];
+                        if (url.includes('8aada67d4c5601e009b9d2a88f478c')) {
+                            return 'combat';
+                        }
+                        
+                        if (url.includes('00f1a594723515a77dcd6d66c918fb')) {
+                            return 'arena';
+                        }
+
+                        if (url.includes('586768e942030301c484347698bc5e')) {
+                            return 'circus';
+                        }
+
+                        if (url.includes('4e41ab43222200aa024ee177efef8f')) {
+                            return 'expedition';
+                        }
+
+                        if (url.includes('dc366909fdfe69897d583583f6e446')) {
+                            return 'dungeon';
+                        }
+
+                        if (url.includes('5a358e0a030d8551a5a65d284c8730')) {
+                            return 'items';
+                        }
+
+                        return null;
                     }
 
                     const availableQuests = $("#content .contentboard_slot_inactive");
@@ -753,8 +779,8 @@
                     for (const quest of availableQuests) {
                         let icon = getIconName(quest.getElementsByClassName("quest_slot_icon")[0].style.backgroundImage);
 
-                        if (icon === "grouparena") {
-                            icon = "circus";
+                        if (!icon) {
+                            console.log('No quest was found')
                         };
 
                         if (questTypes[icon]) {
