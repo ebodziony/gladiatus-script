@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.52
+// @version      2.6
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -10,7 +10,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.52
+// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.6
 // ==/UserScript==
 
 
@@ -297,7 +297,7 @@
                 <span id="settingsLanguage">
                     <img id="languageEN" src="${assetsUrl}/GB.png">
                     <img id="languagePL" src="${assetsUrl}/PL.png">
-                    <img id="languageES" src="${assetsUrl}/AR.png">
+                    <img id="languageES" src="${assetsUrl}/ES.png">
                 </span>
                 <span id="settingsHeader">${content.settings}</span>
                 <div id="settingsContent">
@@ -445,7 +445,7 @@
 
         $("#languageEN").click(function() { setLanguage('EN') });
         $("#languagePL").click(function() { setLanguage('PL') });
-        $("#languageAR").click(function() { setLanguage('ES') });
+        $("#languageES").click(function() { setLanguage('ES') });
 
         // Change Settings
 
