@@ -436,6 +436,9 @@
                 case 'PL':
                     content = { ...contentPL }
                     break;
+                case 'ES':
+                    content = { ...contentES }
+                    break;
                 default:
                     content = { ...contentEN }
             };
