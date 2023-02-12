@@ -208,6 +208,32 @@
         yes: 'Tak'
     }
 
+    const contentES = {
+        advanced: 'Avanzado',
+        arena: 'Arena',
+        circusTurma: 'Circus Turma',
+        difficulty: 'Dificultad',
+        dungeon: 'Mazmorra',
+        eventExpedition: 'Expedición de Evento',
+        expedition: 'Expedición',
+        highest: 'Más alto',
+        in: 'En',
+        lastUsed: "Último visitado",
+        location: 'Localización',
+        lowest: 'Más bajo',
+        nextAction: 'Próxima Acción',
+        no: 'No',
+        normal: 'Normal',
+        opponent: 'Oponente',
+        opponentLevel: 'Nivel de oponente',
+        quests: 'Misiones',
+        random: 'Aleatorio',
+        settings: 'Configuración',
+        soon: 'Próximamente...',
+        type: 'Tipo',
+        yes: 'Si'
+    }
+
     let content;
 
     const language = localStorage.getItem('settings.language')
@@ -219,10 +245,12 @@
         case 'PL':
             content = { ...contentPL }
             break;
+        case 'ES':
+            content = { ...contentES }
+            break;
         default:
             content = { ...contentEN }
     }
-
 
     /****************
     *   Interface   *
@@ -269,6 +297,7 @@
                 <span id="settingsLanguage">
                     <img id="languageEN" src="${assetsUrl}/GB.png">
                     <img id="languagePL" src="${assetsUrl}/PL.png">
+                    <img id="languageES" src="${assetsUrl}/AR.png">
                 </span>
                 <span id="settingsHeader">${content.settings}</span>
                 <div id="settingsContent">
@@ -416,6 +445,7 @@
 
         $("#languageEN").click(function() { setLanguage('EN') });
         $("#languagePL").click(function() { setLanguage('PL') });
+        $("#languageAR").click(function() { setLanguage('ES') });
 
         // Change Settings
 
