@@ -297,6 +297,7 @@
                 <span id="settingsLanguage">
                     <img id="languageEN" src="${assetsUrl}/GB.png">
                     <img id="languagePL" src="${assetsUrl}/PL.png">
+                    <img id="languageES" src="${assetsUrl}/AR.png">
                 </span>
                 <span id="settingsHeader">${content.settings}</span>
                 <div id="settingsContent">
@@ -444,6 +445,7 @@
 
         $("#languageEN").click(function() { setLanguage('EN') });
         $("#languagePL").click(function() { setLanguage('PL') });
+        $("#languageAR").click(function() { setLanguage('ES') });
 
         // Change Settings
 
