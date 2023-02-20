@@ -152,6 +152,25 @@
         };
     };
 
+    // Food
+
+    let doFood = true;
+    if (localStorage.getItem('doFood')){
+        doFood = localStorage.getItem('doFood') === "true" ? true : false;
+    };
+    let useFoodAtLowHealth = true;
+    if (localStorage.getItem('useFoodAtLowHealth')) {
+        useFoodAtLowHealth = localStorage.getItem('useFoodAtLowHealth') === "true" ? true : false;
+    };
+    let foodTab = 1;
+    if (localStorage.getItem('foodTab')) {
+        foodTab = Number(localStorage.getItem('foodTab'));
+    };
+    let healthTreshold = 80;
+    if (localStorage.getItem('healthTreshold')) {
+        healthTreshold = Number(localStorage.getItem('healthTreshold'));
+    };
+
     /*****************
     *  Translations  *
     *****************/
@@ -179,7 +198,10 @@
         settings: 'Settings',
         soon: 'Soon...',
         type: 'Type',
-        yes: 'Yes'
+        yes: 'Yes',
+        food: 'Food',
+        healthTreshold: '% Health',
+        foodTab: 'Food tab'
     }
 
     const contentPL = {
@@ -205,7 +227,10 @@
         settings: 'Ustawienia',
         soon: 'Wkrótce...',
         type: 'Rodzaj',
-        yes: 'Tak'
+        yes: 'Tak',
+        food: 'Food',
+        healthTreshold: '% Health',
+        foodTab: 'Food tab' // Needs PL translation
     }
 
     const contentES = {
@@ -231,7 +256,10 @@
         settings: 'Configuración',
         soon: 'Próximamente...',
         type: 'Tipo',
-        yes: 'Si'
+        yes: 'Si',
+        food: 'Comida',
+        healthTreshold: '% Vida',
+        foodTab: 'Pestaña de comida'
     }
 
     let content;
@@ -414,6 +442,25 @@
                             <div id="set_event_monster_id_3" class="settingsButton">Boss</div>
                         </div>
                     </div>
+
+                    <div id="health_settings" class="settings_box">
+                        <div style="display: flex; flex-direction: column;">
+                        <div class="settingsHeaderBig">${content.food}</div>
+                        <div class="settingsSubcontent">
+                            <div id="do_health_true" class="settingsButton">${content.yes}</div>
+                            <div id="do_health_false" class="settingsButton">${content.no}</div>
+                        </div>
+                            <div style="display: flex; flex-direction: row;">
+                            <div style="flex: 1; display: flex; flex-direction: column;">
+                                <label class="settingsHeaderSmall" style="margin: 10px;">${content.healthTreshold}</label>
+                                <input id="set_health_treshold" style="width: 25%" value="${healthTreshold}" placeholder="${healthTreshold}" type="text"/>
+                            </div>
+                            <div style="flex: 1; display: flex; flex-direction: column;">
+                                <label class="settingsHeaderSmall" style="margin: 10px;">${content.foodTab}</label>
+                                <input id="set_food_tab" type="text" style="width: 25%" value="${foodTab}" placeholder="${foodTab}"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>`;
         document.getElementById("header_game").insertBefore(settingsWindow, document.getElementById("header_game").children[0]);
 
@@ -570,6 +617,35 @@
         $("#set_event_monster_id_2").click(function() { setEventMonster('2') });
         $("#set_event_monster_id_3").click(function() { setEventMonster('3') });
 
+        function setDoFood(bool) {
+            doFood = bool;
+            localStorage.setItem('doFood', bool);
+            reloadSettings();
+        };
+
+        $("#do_health_true").click(function() { setDoFood(true) });
+        $("#do_health_false").click(function() { setDoFood(false) });
+
+        function setHealthTreshold(threshold) {
+            setHealthTreshold = threshold;
+            localStorage.setItem('setHealthTreshold', threshold);
+            reloadSettings();
+        }
+
+        function setFoodTab(tab) {
+            setFoodTab = tab;
+            localStorage.setItem('setFoodTab', tab);
+            reloadSettings();
+        }
+
+        document.querySelector('#set_health_treshold').addEventListener('keydown', (e) => {
+            setHealthTreshold(e.target.value);
+        });
+
+        document.querySelector('#set_food_tab').addEventListener('keydown', (e) => {
+            setFoodTab(e.target.value);
+        });
+
         function reloadSettings() {
             closeSettings();
             openSettings();
@@ -604,6 +680,9 @@
             $('#event_expedition_settings').addClass(doEventExpedition ? 'active' : 'inactive');
             $(`#do_event_expedition_${doEventExpedition}`).addClass('active');
             $(`#set_event_monster_id_${eventMonsterId}`).addClass('active');
+
+            $('#health_settings').addClass(doFood ? 'active' : 'inactive');
+            $(`#do_food_${doFood}`).addClass('active');
         };
 
         setActiveButtons();
@@ -854,6 +933,34 @@
 
         else if (doExpedition === true && document.getElementById("cooldown_bar_fill_expedition").classList.contains("cooldown_bar_fill_ready") === true) {
             function goExpedition() {
+
+                if (player.hp < healthTreshold) {
+
+                    console.log("Low health!");
+
+                    const isOverviewPage = $("body").first().attr("id") === "overviewPage";
+                    console.log(isOverviewPage);
+
+                    if (!isOverviewPage) {
+                        $("#mainmenu a.menuitem")[0].click();
+                        console.log("click on overview");
+                    } else {
+
+                        /* Double click (only works with Gladiatus Crazy addon) */
+                        var image = document.querySelector("#inv .ui-draggable-handle");
+
+                        if (image) {
+                            var event = new MouseEvent("dblclick", {
+                                bubbles: true,
+                                cancelable: true
+                            });
+                            image.dispatchEvent(event);
+                        }
+
+                        console.log(`Used food at %${player.hp} with threshold ${healthTreshold}`);
+                    }
+                }
+
                 const inExpeditionPage = $("body").first().attr("id") === "locationPage";
                 const inEventExpeditionPage = document.getElementById("content").getElementsByTagName('img')[1].getAttribute('src') === 'img/ui/expedition_points2.png';
 
@@ -906,6 +1013,34 @@
 
         else if (doArena === true && document.getElementById("cooldown_bar_fill_arena").classList.contains("cooldown_bar_fill_ready") === true) {
             function goArena() {
+
+                if (player.hp < healthTreshold) {
+
+                    console.log("Low health!");
+
+                    const isOverviewPage = $("body").first().attr("id") === "overviewPage";
+                    console.log(isOverviewPage);
+
+                    if (!isOverviewPage) {
+
+                        $("#mainmenu a.menuitem")[0].click();
+                        console.log($("#mainmenu a.menuitem")[0]);
+                        console.log("click on overview");
+
+                        var image = document.querySelector("#inv .ui-draggable-handle");
+
+                        if (image) {
+                            var event = new MouseEvent("dblclick", {
+                                bubbles: true,
+                                cancelable: true
+                            });
+                            image.dispatchEvent(event);
+                        }
+
+                        console.log(`Used food at %${player.hp} with threshold ${healthTreshold}`);
+                    }
+                }
+
                 const inArenaPage = document.getElementsByTagName("body")[0].id === "arenaPage";
 
                 if (!inArenaPage && player.level < 10) {
