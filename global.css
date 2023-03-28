@@ -13,8 +13,9 @@
 
 #settingsWindow
 {
-    height: 511px;
+    min-height: 511px;
     width: 538px;
+    background-repeat: round;
     padding: 50px 40px;
     background-image: url('https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/settings.png');
     display: block;

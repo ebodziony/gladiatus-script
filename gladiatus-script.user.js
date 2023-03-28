@@ -10,25 +10,29 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.6
+// @resource     customCSS_global  https://raw.githubusercontent.com/LucasBares/gladiatus-script/master/global.css
 // ==/UserScript==
 
-
+const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/master/global.css?v=" + Date.now();
 (function() {
     'use strict';
 
     // Add CSS
 
     function addCustomCSS() {
-        const globalCSS = GM_getResourceText("customCSS_global");
-        GM_addStyle(globalCSS);
+        const getStyle = async () => {
+            const res = await fetch(cssUrl)
+            const css = await res.text()
+            GM_addStyle(css);
+        }
+        getStyle();
     };
-    
+
     addCustomCSS();
 
     /*****************
     *     Global     *
-    *****************/  
+    *****************/
 
     const assetsUrl = 'https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets';
 
@@ -85,7 +89,7 @@
     };
 
     // Dungeon
-    
+
     let doDungeon = true;
     if (localStorage.getItem('doDungeon')) {
         doDungeon = localStorage.getItem('doDungeon') === "true" ? true : false;
@@ -132,7 +136,7 @@
     if (!document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0]){
         doEventExpedition = false;
     };
-    
+
     let eventMonsterId = 0;
     if (localStorage.getItem('eventMonsterId')) {
         eventMonsterId = Number(localStorage.getItem('eventMonsterId'));
@@ -170,6 +174,14 @@
     if (localStorage.getItem('healthTreshold')) {
         healthTreshold = Number(localStorage.getItem('healthTreshold'));
     };
+
+    setTimeout(() => {
+        console.log(localStorage.getItem('foodTab'), document.querySelector("#set_food_tab"), foodTab)
+        console.log(localStorage.getItem('healthTreshold'), document.querySelector("#set_health_treshold") )
+
+        if (document.querySelector("#set_food_tab")) document.querySelector("#set_food_tab").value = localStorage.getItem('foodTab')
+        if (document.querySelector("#set_health_treshold")) document.querySelector("#set_health_treshold").value = localStorage.getItem('healthTreshold')
+    }, 100)
 
     /*****************
     *  Translations  *
@@ -443,21 +455,24 @@
                         </div>
                     </div>
 
-                    <div id="health_settings" class="settings_box">
+                    <div id="health_settings" style="padding-bottom: 50px" class="settings_box">
                         <div style="display: flex; flex-direction: column;">
                         <div class="settingsHeaderBig">${content.food}</div>
                         <div class="settingsSubcontent">
                             <div id="do_health_true" class="settingsButton">${content.yes}</div>
                             <div id="do_health_false" class="settingsButton">${content.no}</div>
                         </div>
-                            <div style="display: flex; flex-direction: row;">
+                        <div class="settingsSubcontent" style="display: flex; flex-direction: row;">
                             <div style="flex: 1; display: flex; flex-direction: column;">
-                                <label class="settingsHeaderSmall" style="margin: 10px;">${content.healthTreshold}</label>
-                                <input id="set_health_treshold" style="width: 25%" value="${healthTreshold}" placeholder="${healthTreshold}" type="text"/>
+                                <label class="settingsHeaderSmall" style="margin: 10px 0;text-align: left;">${content.healthTreshold}</label>
+                                <input id="set_health_treshold" style="width: 50%" max="100" min="0" value="${healthTreshold}" placeholder="${healthTreshold}" type="number"/>
                             </div>
                             <div style="flex: 1; display: flex; flex-direction: column;">
-                                <label class="settingsHeaderSmall" style="margin: 10px;">${content.foodTab}</label>
-                                <input id="set_food_tab" type="text" style="width: 25%" value="${foodTab}" placeholder="${foodTab}"/>
+                                <label class="settingsHeaderSmall" style="margin: 10px 0; white-space: nowrap;">${content.foodTab}</label>
+                                <select id="set_food_tab" value="${foodTab}" name="numero">
+                                    ${[1, 2, 3, 4, 5, 6, 7, 8].map((tab) => `<option ${tab === foodTab ? "selected" : ""} value="${tab}">${tab}</option>`)}
+                                </select>
+
                             </div>
                         </div>
                     </div>
@@ -627,22 +642,41 @@
         $("#do_health_false").click(function() { setDoFood(false) });
 
         function setHealthTreshold(threshold) {
-            setHealthTreshold = threshold;
-            localStorage.setItem('setHealthTreshold', threshold);
+            healthTreshold = Number(threshold);
+            localStorage.setItem('healthTreshold', threshold);
             reloadSettings();
         }
 
         function setFoodTab(tab) {
-            setFoodTab = tab;
-            localStorage.setItem('setFoodTab', tab);
+            foodTab = Number(tab);
+            console.log({tab})
+            localStorage.setItem('foodTab', tab);
             reloadSettings();
         }
+        let debounceTimer;
 
-        document.querySelector('#set_health_treshold').addEventListener('keydown', (e) => {
-            setHealthTreshold(e.target.value);
+        document.querySelector('#set_health_treshold').addEventListener('keyup', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const value = Number(e.target.value)
+                const min = Number(e.target.min)
+                const max = Number(e.target.max)
+
+                if (value < min) {
+                    e.target.value = e.target.min;
+                }
+
+                if (value > max) {
+                    e.target.value = e.target.max;
+                }
+                console.log(e.target.value)
+                setHealthTreshold(e.target.value);
+            }, 500);
         });
 
-        document.querySelector('#set_food_tab').addEventListener('keydown', (e) => {
+
+        document.querySelector('#set_food_tab').addEventListener('change', (e) => {
+            console.log(e.target.value)
             setFoodTab(e.target.value);
         });
 
@@ -670,7 +704,7 @@
 
             $('#quests_settings').addClass(doQuests ? 'active' : 'inactive');
             $(`#do_quests_${doQuests}`).addClass('active');
-            
+
             for (const type in questTypes) {
                 if (questTypes[type]) {
                     $(`#do_${type}_quests`).addClass('active');
@@ -762,6 +796,41 @@
         return ms;
     };
 
+    function autoHealth() {
+        console.log("Low health!");
+
+        const isOverviewPage = $("body").first().attr("id") === "overviewPage";
+        console.log(isOverviewPage);
+
+        if (!isOverviewPage) {
+            $("#mainmenu a.menuitem")[0].click();
+            console.log("click on overview");
+        } else {
+            const tab = document.querySelectorAll("#inventory_nav > a")[foodTab - 1]
+            const clickEvent = new MouseEvent("click", {
+                bubbles: true,
+                cancelable: true
+            });
+            tab.dispatchEvent(clickEvent);
+
+            /* Double click (only works with Gladiatus Crazy addon) */
+            setTimeout(() => {
+                const bestFood = document.querySelector("[style*='filter: drop-shadow(black 0px 0px 1px) drop-shadow(yellow 0px 0px 3px) drop-shadow(yellow 0px 0px 3px)']");
+                const nearFood = document.querySelector("#inv .ui-draggable-handle");
+
+                if (bestFood || nearFood) {
+                    var dbClickEvent = new MouseEvent("dblclick", {
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    (bestFood || nearFood).dispatchEvent(dbClickEvent);
+                }
+
+                console.log(`Used food at %${player.hp} with threshold ${healthTreshold}`);
+            }, 1000);
+        }
+    }
+
     /****************
     *    Auto Go    *
     ****************/
@@ -789,45 +858,16 @@
             }, clickDelay);
         };
 
-        /***************
-        *   Use Food   *
-        ***************/
-
-        if (player.hp < 10) {
-            console.log("Low health");
-
-            var lowHealthAlert = document.createElement("div");
-
-            function showLowHealthAlert() {
-                lowHealthAlert.setAttribute("id", "lowHealth")
-                lowHealthAlert.setAttribute("style", `
-                    display: block;
-                    position: absolute;
-                    top: 120px;
-                    left: 506px;
-                    width: 365px;
-                    padding: 20px 0;
-                    color: #ea1414;
-                    background-color: #000000db;
-                    font-size: 20px;
-                    border-radius: 25px;
-                    border-left: 10px solid #ea1414;
-                    border-right: 10px solid #ea1414;
-                    z-index: 999;
-                `);
-                lowHealthAlert.innerHTML = '<span>Low Health!</span>';
-                document.getElementById("header_game").insertBefore(lowHealthAlert, document.getElementById("header_game").children[0]);
-            };
-            showLowHealthAlert();
-
-            // @TODO
-        }
 
         /****************
         * Handle Quests *
         ****************/
 
-        else if (doQuests === true && nextQuestTime < currentTime) {
+        if (doQuests === true && nextQuestTime < currentTime) {
+            if (player.hp < healthTreshold) {
+                autoHealth();
+            }
+
             function completeQuests() {
                 const inPanteonPage = $("body").first().attr("id") === "questsPage";
 
@@ -862,7 +902,7 @@
                         if (url.includes('8aada67d4c5601e009b9d2a88f478c')) {
                             return 'combat';
                         }
-                        
+
                         if (url.includes('00f1a594723515a77dcd6d66c918fb')) {
                             return 'arena';
                         }
@@ -898,10 +938,10 @@
                         if (questTypes[icon]) {
                             return quest.getElementsByClassName("quest_slot_button_accept")[0].click();
                         };
-                    }           
+                    }
 
                     $("#quest_footer_reroll input").first().click()
-                }  
+                }
 
                 checkNextQuestTime();
             }
@@ -935,30 +975,7 @@
             function goExpedition() {
 
                 if (player.hp < healthTreshold) {
-
-                    console.log("Low health!");
-
-                    const isOverviewPage = $("body").first().attr("id") === "overviewPage";
-                    console.log(isOverviewPage);
-
-                    if (!isOverviewPage) {
-                        $("#mainmenu a.menuitem")[0].click();
-                        console.log("click on overview");
-                    } else {
-
-                        /* Double click (only works with Gladiatus Crazy addon) */
-                        var image = document.querySelector("#inv .ui-draggable-handle");
-
-                        if (image) {
-                            var event = new MouseEvent("dblclick", {
-                                bubbles: true,
-                                cancelable: true
-                            });
-                            image.dispatchEvent(event);
-                        }
-
-                        console.log(`Used food at %${player.hp} with threshold ${healthTreshold}`);
-                    }
+                    autoHealth();
                 }
 
                 const inExpeditionPage = $("body").first().attr("id") === "locationPage";
@@ -966,7 +983,7 @@
 
                 if (!inExpeditionPage || inEventExpeditionPage) {
                     document.getElementsByClassName("cooldown_bar_link")[0].click();
-                } else { 
+                } else {
                     document.getElementsByClassName("expedition_button")[monsterId].click();
                 };
             };
@@ -1013,32 +1030,8 @@
 
         else if (doArena === true && document.getElementById("cooldown_bar_fill_arena").classList.contains("cooldown_bar_fill_ready") === true) {
             function goArena() {
-
                 if (player.hp < healthTreshold) {
-
-                    console.log("Low health!");
-
-                    const isOverviewPage = $("body").first().attr("id") === "overviewPage";
-                    console.log(isOverviewPage);
-
-                    if (!isOverviewPage) {
-
-                        $("#mainmenu a.menuitem")[0].click();
-                        console.log($("#mainmenu a.menuitem")[0]);
-                        console.log("click on overview");
-
-                        var image = document.querySelector("#inv .ui-draggable-handle");
-
-                        if (image) {
-                            var event = new MouseEvent("dblclick", {
-                                bubbles: true,
-                                cancelable: true
-                            });
-                            image.dispatchEvent(event);
-                        }
-
-                        console.log(`Used food at %${player.hp} with threshold ${healthTreshold}`);
-                    }
+                    autoHealth();
                 }
 
                 const inArenaPage = document.getElementsByTagName("body")[0].id === "arenaPage";
@@ -1052,7 +1045,7 @@
 
                     if (!inArenaProvPage) {
                         document.getElementsByTagName("td")[1].firstElementChild.click();
-                    } else { 
+                    } else {
                         const levels = new Array();
                         levels[0] = Number(document.getElementById("own2").getElementsByTagName("td")[1].firstChild.nodeValue)
                         levels[1] = Number(document.getElementById("own2").getElementsByTagName("td")[5].firstChild.nodeValue)
@@ -1069,7 +1062,7 @@
                         } else {
                             opponentIndex = getRandomIntIndex(levels)
                         }
-                
+
                         document.getElementsByClassName("attack")[opponentIndex].click();
                     }
                 }
@@ -1096,7 +1089,7 @@
 
                     if (!inCircusProvPage) {
                         document.getElementsByTagName("td")[3].firstElementChild.click();
-                    } else { 
+                    } else {
                         const levels = new Array();
                         levels[0] = Number(document.getElementById("own3").getElementsByTagName("td")[1].firstChild.nodeValue)
                         levels[1] = Number(document.getElementById("own3").getElementsByTagName("td")[5].firstChild.nodeValue)
@@ -1164,7 +1157,7 @@
 
                         document.getElementsByClassName("expedition_button")[eventMonsterId].click();
                     }
-                }                
+                }
             };
 
             setTimeout(function(){
@@ -1185,7 +1178,7 @@
 
             if (safeMode === false) {
                 const actions = [];
-    
+
                 if (doExpedition === true) {
                     const timeTo = convertTimeToMs(document.getElementById("cooldown_bar_text_expedition").innerText);
 
@@ -1252,7 +1245,7 @@
                 const nextAction = getNextAction(actions);
 
                 // @TODO fix nextAction if !actions.length
-    
+
                 function formatTime(timeInMs) {
                     if (timeInMs < 1000) {
                         return "0:00:00"
@@ -1270,12 +1263,12 @@
                         mins = "0" + mins;
                     };
                     let hrs = (timeInSecs - mins) / 60;
-    
+
                     return hrs + ':' + mins + ':' + secs;
                 };
 
                 var nextActionWindow = document.createElement("div");
-    
+
                 function showNextActionWindow() {
                     nextActionWindow.setAttribute("id", "nextActionWindow")
                     nextActionWindow.setAttribute("style", `
@@ -1304,16 +1297,16 @@
                 showNextActionWindow();
 
                 let nextActionCounter;
-    
+
                 nextActionCounter = setInterval(function() {
                     nextAction.time = nextAction.time - 1000;
-    
+
                     nextActionWindow.innerHTML = `
                         <span style="color: #fff;">${content.nextAction}: </span>
                         <span>${content[nextAction.name]}</span></br>
                         <span style="color: #fff;">${content.in}: </span>
                         <span>${formatTime(nextAction.time)}</span>`;
-    
+
                     if (nextAction.time <= 0) {
                         if (nextAction.index === 4) {
                             document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
