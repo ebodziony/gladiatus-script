@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.6
+// @version      2.6.4
 // @description  Dodatek do gry Gladiatus
 // @author       Eryk Bodziony
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
@@ -10,7 +10,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.6
+// @resource     customCSS_global  https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/global.css?ver=2.6.4
 // ==/UserScript==
 
 
@@ -910,10 +910,10 @@
                 } else if (!inArenaPage) {
                     document.getElementsByClassName("cooldown_bar_link")[2].click();
                 } else {
-                    const inArenaProvPage = document.getElementsByTagName("td")[1].firstChild.hasClass("awesome-tabs current");
+                    const inArenaProvPage = document.getElementById("mainnav").getElementsByTagName("td")[1].firstChild.hasClass("awesome-tabs current");
 
                     if (!inArenaProvPage) {
-                        document.getElementsByTagName("td")[1].firstElementChild.click();
+                        document.getElementById("mainnav").getElementsByTagName("td")[1].firstElementChild.click();
                     } else { 
                         const levels = new Array();
                         levels[0] = Number(document.getElementById("own2").getElementsByTagName("td")[1].firstChild.nodeValue)
@@ -954,10 +954,10 @@
                 if (!inArenaPage) {
                     document.getElementsByClassName("cooldown_bar_link")[3].click();
                 } else {
-                    const inCircusProvPage = document.getElementsByTagName("td")[3].firstChild.hasClass("awesome-tabs current");
+                    const inCircusProvPage = document.getElementById("mainnav").getElementsByTagName("td")[3].firstChild.hasClass("awesome-tabs current");
 
                     if (!inCircusProvPage) {
-                        document.getElementsByTagName("td")[3].firstElementChild.click();
+                        document.getElementById("mainnav").getElementsByTagName("td")[3].firstElementChild.click();
                     } else { 
                         const levels = new Array();
                         levels[0] = Number(document.getElementById("own3").getElementsByTagName("td")[1].firstChild.nodeValue)
