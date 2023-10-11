@@ -1071,6 +1071,7 @@ const cssUrl = "https://raw.githubusercontent.com/Taeko-ar/gladiatus-script/mast
                     if (!inArenaProvPage) {
                         document.getElementById("mainnav").getElementsByTagName("td")[1].firstElementChild.click();
                     } else {
+
                         const levels = new Array();
                         const levelValues = getElementsByXPath('//section/table/tbody/tr/td[2]');
 
