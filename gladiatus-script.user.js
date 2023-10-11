@@ -1,20 +1,21 @@
 // ==UserScript==
 // @name         Gladiatus Script
-// @version      2.6
-// @description  Dodatek do gry Gladiatus
+// @version      3.0
+// @description  Gladiatus Bot
 // @author       Eryk Bodziony
+// @mainteiner   Taeko
 // @match        *://*.gladiatus.gameforge.com/game/index.php*
 // @exclude      *://*.gladiatus.gameforge.com/game/index.php?mod=start
-// @downloadURL  https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.js
-// @updateURL    https://github.com/ebodziony/gladiatus-script/raw/master/gladiatus-script.js
+// @downloadURL  https://github.com/Taeko-ar/gladiatus-script/raw/master/gladiatus-script.js
+// @updateURL    https://github.com/Taeko-ar/gladiatus-script/raw/master/gladiatus-script.js
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js
-// @resource     customCSS_global  https://raw.githubusercontent.com/LucasBares/gladiatus-script/master/global.css
+// @resource     customCSS_global  https://raw.githubusercontent.com/Taeko-ar/gladiatus-script/master/global.css
 // ==/UserScript==
 
-const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/master/global.css?v=" + Date.now();
-(function() {
+const cssUrl = "https://raw.githubusercontent.com/Taeko-ar/gladiatus-script/master/global.css?v=" + Date.now();
+(function () {
     'use strict';
 
     // Add CSS
@@ -34,7 +35,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
     *     Global     *
     *****************/
 
-    const assetsUrl = 'https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets';
+    const assetsUrl = 'https://raw.githubusercontent.com/Taeko-ar/gladiatus-script/master/assets';
 
     let autoGoActive = sessionStorage.getItem('autoGoActive') === "true" ? true : false;
 
@@ -116,7 +117,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
     // Circus
 
     let doCircus = true;
-    if (localStorage.getItem('doCircus')){
+    if (localStorage.getItem('doCircus')) {
         doCircus = localStorage.getItem('doCircus') === "true" ? true : false;
     };
     if (player.level < 10) {
@@ -133,7 +134,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
     if (localStorage.getItem('doEventExpedition')) {
         doEventExpedition = localStorage.getItem('doEventExpedition') === "true" ? true : false;
     };
-    if (!document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0]){
+    if (!document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0]) {
         doEventExpedition = false;
     };
 
@@ -159,7 +160,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
     // Food
 
     let doFood = true;
-    if (localStorage.getItem('doFood')){
+    if (localStorage.getItem('doFood')) {
         doFood = localStorage.getItem('doFood') === "true" ? true : false;
     };
     let useFoodAtLowHealth = true;
@@ -177,7 +178,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
 
     setTimeout(() => {
         console.log(localStorage.getItem('foodTab'), document.querySelector("#set_food_tab"), foodTab)
-        console.log(localStorage.getItem('healthTreshold'), document.querySelector("#set_health_treshold") )
+        console.log(localStorage.getItem('healthTreshold'), document.querySelector("#set_health_treshold"))
 
         if (document.querySelector("#set_food_tab")) document.querySelector("#set_food_tab").value = localStorage.getItem('foodTab')
         if (document.querySelector("#set_health_treshold")) document.querySelector("#set_health_treshold").value = localStorage.getItem('healthTreshold')
@@ -300,8 +301,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
     function setAutoGoActive() {
         sessionStorage.setItem('autoGoActive', true);
         document.getElementById("autoGoButton").innerHTML = 'STOP'
-        document.getElementById("autoGoButton").removeEventListener ("click", setAutoGoActive);
-        document.getElementById("autoGoButton").addEventListener ("click", setAutoGoInactive);
+        document.getElementById("autoGoButton").removeEventListener("click", setAutoGoActive);
+        document.getElementById("autoGoButton").addEventListener("click", setAutoGoInactive);
         autoGo();
     };
 
@@ -309,8 +310,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
     function setAutoGoInactive() {
         sessionStorage.setItem('autoGoActive', false);
         document.getElementById("autoGoButton").innerHTML = 'Auto GO'
-        document.getElementById("autoGoButton").addEventListener ("click", setAutoGoActive);
-        document.getElementById("autoGoButton").removeEventListener ("click", setAutoGoInactive);
+        document.getElementById("autoGoButton").addEventListener("click", setAutoGoActive);
+        document.getElementById("autoGoButton").removeEventListener("click", setAutoGoInactive);
 
         clearTimeout(setTimeout);
 
@@ -324,7 +325,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
     };
 
     // Open Settings
-    function openSettings(){
+    function openSettings() {
 
         function closeSettings() {
             document.getElementById("settingsWindow").remove();
@@ -332,8 +333,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
         };
 
         var settingsWindow = document.createElement("div");
-            settingsWindow.setAttribute("id", "settingsWindow")
-            settingsWindow.innerHTML = `
+        settingsWindow.setAttribute("id", "settingsWindow")
+        settingsWindow.innerHTML = `
                 <span id="settingsLanguage">
                     <img id="languageEN" src="${assetsUrl}/GB.png">
                     <img id="languagePL" src="${assetsUrl}/PL.png">
@@ -480,10 +481,10 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
         document.getElementById("header_game").insertBefore(settingsWindow, document.getElementById("header_game").children[0]);
 
         var overlayBack = document.createElement("div");
-            const wrapperHeight = document.getElementById("wrapper_game").clientHeight;
-            overlayBack.setAttribute("id", "overlayBack");
-            overlayBack.setAttribute("style", `height: ${wrapperHeight}px;`);
-            overlayBack.addEventListener ("click", closeSettings);
+        const wrapperHeight = document.getElementById("wrapper_game").clientHeight;
+        overlayBack.setAttribute("id", "overlayBack");
+        overlayBack.setAttribute("style", `height: ${wrapperHeight}px;`);
+        overlayBack.addEventListener("click", closeSettings);
         document.getElementsByTagName("body")[0].appendChild(overlayBack);
 
         // Set Language
@@ -508,9 +509,9 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#languageEN").click(function() { setLanguage('EN') });
-        $("#languagePL").click(function() { setLanguage('PL') });
-        $("#languageES").click(function() { setLanguage('ES') });
+        $("#languageEN").click(function () { setLanguage('EN') });
+        $("#languagePL").click(function () { setLanguage('PL') });
+        $("#languageES").click(function () { setLanguage('ES') });
 
         // Change Settings
 
@@ -520,8 +521,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#do_expedition_true").click(function() { setDoExpedition(true) });
-        $("#do_expedition_false").click(function() { setDoExpedition(false) });
+        $("#do_expedition_true").click(function () { setDoExpedition(true) });
+        $("#do_expedition_false").click(function () { setDoExpedition(false) });
 
         function setMonster(id) {
             monsterId = id;
@@ -529,10 +530,10 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#set_monster_id_0").click(function() { setMonster('0') });
-        $("#set_monster_id_1").click(function() { setMonster('1') });
-        $("#set_monster_id_2").click(function() { setMonster('2') });
-        $("#set_monster_id_3").click(function() { setMonster('3') });
+        $("#set_monster_id_0").click(function () { setMonster('0') });
+        $("#set_monster_id_1").click(function () { setMonster('1') });
+        $("#set_monster_id_2").click(function () { setMonster('2') });
+        $("#set_monster_id_3").click(function () { setMonster('3') });
 
         function setDoDungeon(bool) {
             doDungeon = bool;
@@ -540,8 +541,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#do_dungeon_true").click(function() { setDoDungeon(true) });
-        $("#do_dungeon_false").click(function() { setDoDungeon(false) });
+        $("#do_dungeon_true").click(function () { setDoDungeon(true) });
+        $("#do_dungeon_false").click(function () { setDoDungeon(false) });
 
         function setDungeonDifficulty(difficulty) {
             dungeonDifficulty = difficulty;
@@ -549,8 +550,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#set_dungeon_difficulty_normal").click(function() { setDungeonDifficulty("normal") });
-        $("#set_dungeon_difficulty_advanced").click(function() { setDungeonDifficulty("advanced") });
+        $("#set_dungeon_difficulty_normal").click(function () { setDungeonDifficulty("normal") });
+        $("#set_dungeon_difficulty_advanced").click(function () { setDungeonDifficulty("advanced") });
 
         function setDoArena(bool) {
             doArena = bool;
@@ -558,8 +559,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#do_arena_true").click(function() { setDoArena(true) });
-        $("#do_arena_false").click(function() { setDoArena(false) });
+        $("#do_arena_true").click(function () { setDoArena(true) });
+        $("#do_arena_false").click(function () { setDoArena(false) });
 
         function setArenaOpponentLevel(level) {
             arenaOpponentLevel = level;
@@ -567,9 +568,9 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#set_arena_opponent_level_min").click(function() { setArenaOpponentLevel('min') });
-        $("#set_arena_opponent_level_max").click(function() { setArenaOpponentLevel('max') });
-        $("#set_arena_opponent_level_random").click(function() { setArenaOpponentLevel('random') });
+        $("#set_arena_opponent_level_min").click(function () { setArenaOpponentLevel('min') });
+        $("#set_arena_opponent_level_max").click(function () { setArenaOpponentLevel('max') });
+        $("#set_arena_opponent_level_random").click(function () { setArenaOpponentLevel('random') });
 
         function setDoCircus(bool) {
             doCircus = bool;
@@ -577,8 +578,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#do_circus_true").click(function() { setDoCircus(true) });
-        $("#do_circus_false").click(function() { setDoCircus(false) });
+        $("#do_circus_true").click(function () { setDoCircus(true) });
+        $("#do_circus_false").click(function () { setDoCircus(false) });
 
         function setCircusOpponentLevel(level) {
             circusOpponentLevel = level;
@@ -586,9 +587,9 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#set_circus_opponent_level_min").click(function() { setCircusOpponentLevel('min') });
-        $("#set_circus_opponent_level_max").click(function() { setCircusOpponentLevel('max') });
-        $("#set_circus_opponent_level_random").click(function() { setCircusOpponentLevel('random') });
+        $("#set_circus_opponent_level_min").click(function () { setCircusOpponentLevel('min') });
+        $("#set_circus_opponent_level_max").click(function () { setCircusOpponentLevel('max') });
+        $("#set_circus_opponent_level_random").click(function () { setCircusOpponentLevel('random') });
 
         function setDoQuests(bool) {
             doQuests = bool;
@@ -596,8 +597,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#do_quests_true").click(function() { setDoQuests(true) });
-        $("#do_quests_false").click(function() { setDoQuests(false) });
+        $("#do_quests_true").click(function () { setDoQuests(true) });
+        $("#do_quests_false").click(function () { setDoQuests(false) });
 
         function setQuestTypes(type) {
             questTypes[type] = !questTypes[type];
@@ -605,12 +606,12 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#do_combat_quests").click(function() { setQuestTypes('combat') });
-        $("#do_arena_quests").click(function() { setQuestTypes('arena') });
-        $("#do_circus_quests").click(function() { setQuestTypes('circus') });
-        $("#do_expedition_quests").click(function() { setQuestTypes('expedition') });
-        $("#do_dungeon_quests").click(function() { setQuestTypes('dungeon') });
-        $("#do_items_quests").click(function() { setQuestTypes('items') });
+        $("#do_combat_quests").click(function () { setQuestTypes('combat') });
+        $("#do_arena_quests").click(function () { setQuestTypes('arena') });
+        $("#do_circus_quests").click(function () { setQuestTypes('circus') });
+        $("#do_expedition_quests").click(function () { setQuestTypes('expedition') });
+        $("#do_dungeon_quests").click(function () { setQuestTypes('dungeon') });
+        $("#do_items_quests").click(function () { setQuestTypes('items') });
 
         function setDoEventExpedition(bool) {
             doEventExpedition = bool;
@@ -618,8 +619,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#do_event_expedition_true").click(function() { setDoEventExpedition(true) });
-        $("#do_event_expedition_false").click(function() { setDoEventExpedition(false) });
+        $("#do_event_expedition_true").click(function () { setDoEventExpedition(true) });
+        $("#do_event_expedition_false").click(function () { setDoEventExpedition(false) });
 
         function setEventMonster(id) {
             eventMonsterId = id;
@@ -627,10 +628,10 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#set_event_monster_id_0").click(function() { setEventMonster('0') });
-        $("#set_event_monster_id_1").click(function() { setEventMonster('1') });
-        $("#set_event_monster_id_2").click(function() { setEventMonster('2') });
-        $("#set_event_monster_id_3").click(function() { setEventMonster('3') });
+        $("#set_event_monster_id_0").click(function () { setEventMonster('0') });
+        $("#set_event_monster_id_1").click(function () { setEventMonster('1') });
+        $("#set_event_monster_id_2").click(function () { setEventMonster('2') });
+        $("#set_event_monster_id_3").click(function () { setEventMonster('3') });
 
         function setDoFood(bool) {
             doFood = bool;
@@ -638,8 +639,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             reloadSettings();
         };
 
-        $("#do_health_true").click(function() { setDoFood(true) });
-        $("#do_health_false").click(function() { setDoFood(false) });
+        $("#do_health_true").click(function () { setDoFood(true) });
+        $("#do_health_false").click(function () { setDoFood(false) });
 
         function setHealthTreshold(threshold) {
             healthTreshold = Number(threshold);
@@ -649,7 +650,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
 
         function setFoodTab(tab) {
             foodTab = Number(tab);
-            console.log({tab})
+            console.log({ tab })
             localStorage.setItem('foodTab', tab);
             reloadSettings();
         }
@@ -728,12 +729,12 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
     autoGoButton.setAttribute("id", "autoGoButton")
     autoGoButton.className = 'menuitem';
 
-    if (autoGoActive == false){
+    if (autoGoActive == false) {
         autoGoButton.innerHTML = 'Auto GO';
-        autoGoButton.addEventListener ("click", setAutoGoActive);
+        autoGoButton.addEventListener("click", setAutoGoActive);
     } else {
         autoGoButton.innerHTML = 'STOP';
-        autoGoButton.addEventListener ("click", setAutoGoInactive);
+        autoGoButton.addEventListener("click", setAutoGoInactive);
     };
 
     document.getElementById("mainmenu").insertBefore(autoGoButton, document.getElementById("mainmenu").children[0]);
@@ -743,8 +744,8 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
     var settingsButton = document.createElement("button");
     settingsButton.className = 'menuitem';
     settingsButton.innerHTML = `<img src="${assetsUrl}/cog.svg" title="Ustawienia" height="20" width="20" style="filter: invert(83%) sepia(52%) saturate(503%) hue-rotate(85deg) brightness(103%) contrast(101%); z-index: 999;">`;
-    settingsButton.setAttribute("style", "display: flex; justify-content: center; align-items: center; height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')" );
-    settingsButton.addEventListener ("click", openSettings);
+    settingsButton.setAttribute("style", "display: flex; justify-content: center; align-items: center; height: 27px; width: 27px; cursor: pointer; border: none; color: #5dce5d; padding: 0; background-image: url('https://i.imgur.com/jf7BXTX.png')");
+    settingsButton.addEventListener("click", openSettings);
     document.getElementById("mainmenu").insertBefore(settingsButton, document.getElementById("mainmenu").children[1]);
 
     /****************
@@ -796,15 +797,29 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
         return ms;
     };
 
+    function getElementsByXPath(xpath, parent) {
+        let results = [];
+        let query = document.evaluate(xpath, parent || document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+
+        for (let i = 0, length = query.snapshotLength; i < length; ++i) {
+            results.push(query.snapshotItem(i));
+        }
+
+        return results;
+    }
+
     function autoHealth() {
-        console.log("Low health!");
+        /* 
+            If on underworld you can comment everything and use pots only
+
+            document.querySelector("#header_life_pot").click()
+        
+        */
 
         const isOverviewPage = $("body").first().attr("id") === "overviewPage";
-        console.log(isOverviewPage);
 
         if (!isOverviewPage) {
             $("#mainmenu a.menuitem")[0].click();
-            console.log("click on overview");
         } else {
             const tab = document.querySelectorAll("#inventory_nav > a")[foodTab - 1]
             const clickEvent = new MouseEvent("click", {
@@ -813,10 +828,21 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
             });
             tab.dispatchEvent(clickEvent);
 
-            /* Double click (only works with Gladiatus Crazy addon) */
+            // Double click (only works with Gladiatus Crazy addon)
             setTimeout(() => {
+                const firstCha = document.querySelector("#char > div.charmercsel> div").click();
                 const bestFood = document.querySelector("[style*='filter: drop-shadow(black 0px 0px 1px) drop-shadow(yellow 0px 0px 3px) drop-shadow(yellow 0px 0px 3px)']");
                 const nearFood = document.querySelector("#inv .ui-draggable-handle");
+
+                if (!bestFood || !nearFood) {
+                    localStorage.setItem('doArena', false);
+                    /*
+                        You can use pots here too
+
+                        document.querySelector("#header_life_pot").click()
+
+                    */
+                }
 
                 if (bestFood || nearFood) {
                     var dbClickEvent = new MouseEvent("dblclick", {
@@ -845,7 +871,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
         // Claim Daily Reward
 
         if (document.getElementById("blackoutDialogLoginBonus") !== null) {
-            setTimeout(function(){
+            setTimeout(function () {
                 document.getElementById("blackoutDialogLoginBonus").getElementsByTagName("input")[0].click();
             }, clickDelay);
         };
@@ -853,7 +879,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
         // Close Notifications
 
         if (document.getElementById("blackoutDialognotification") !== null && document.getElementById("blackoutDialognotification").isDisplayed()) {
-            setTimeout(function(){
+            setTimeout(function () {
                 document.getElementById("blackoutDialognotification").getElementsByTagName("input")[0].click();
             }, clickDelay);
         };
@@ -962,7 +988,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
                 autoGo();
             }
 
-            setTimeout(function(){
+            setTimeout(function () {
                 completeQuests();
             }, clickDelay);
         }
@@ -972,23 +998,29 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
         ****************/
 
         else if (doExpedition === true && document.getElementById("cooldown_bar_fill_expedition").classList.contains("cooldown_bar_fill_ready") === true) {
+
+            if (player.hp < healthTreshold) {
+                autoHealth();
+            }
+
             function goExpedition() {
-
-                if (player.hp < healthTreshold) {
-                    autoHealth();
-                }
-
                 const inExpeditionPage = $("body").first().attr("id") === "locationPage";
                 const inEventExpeditionPage = document.getElementById("content").getElementsByTagName('img')[1].getAttribute('src') === 'img/ui/expedition_points2.png';
 
                 if (!inExpeditionPage || inEventExpeditionPage) {
                     document.getElementsByClassName("cooldown_bar_link")[0].click();
                 } else {
+
+                    if (document.getElementsByClassName("disabled")) {
+                        console.log("Disabled");
+                        location.reload();
+                    }
+                    console.log("Not disabled");
                     document.getElementsByClassName("expedition_button")[monsterId].click();
                 };
             };
 
-            setTimeout(function(){
+            setTimeout(function () {
                 goExpedition();
             }, clickDelay);
 
@@ -1019,7 +1051,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
                 };
             };
 
-            setTimeout(function(){
+            setTimeout(function () {
                 goDungeon();
             }, clickDelay);
         }
@@ -1029,11 +1061,12 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
         ************************/
 
         else if (doArena === true && document.getElementById("cooldown_bar_fill_arena").classList.contains("cooldown_bar_fill_ready") === true) {
-            function goArena() {
-                if (player.hp < healthTreshold) {
-                    autoHealth();
-                }
 
+            if (player.hp < healthTreshold) {
+                autoHealth();
+            }
+
+            function goArena() {
                 const inArenaPage = document.getElementsByTagName("body")[0].id === "arenaPage";
 
                 if (!inArenaPage && player.level < 10) {
@@ -1041,17 +1074,17 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
                 } else if (!inArenaPage) {
                     document.getElementsByClassName("cooldown_bar_link")[2].click();
                 } else {
-                    const inArenaProvPage = document.getElementsByTagName("td")[1].firstChild.hasClass("awesome-tabs current");
+                    const inArenaProvPage = document.getElementById("mainnav").getElementsByTagName("td")[1].firstChild.hasClass("awesome-tabs current");
 
                     if (!inArenaProvPage) {
-                        document.getElementsByTagName("td")[1].firstElementChild.click();
+                        document.getElementById("mainnav").getElementsByTagName("td")[1].firstElementChild.click();
                     } else {
                         const levels = new Array();
-                        levels[0] = Number(document.getElementById("own2").getElementsByTagName("td")[1].firstChild.nodeValue)
-                        levels[1] = Number(document.getElementById("own2").getElementsByTagName("td")[5].firstChild.nodeValue)
-                        levels[2] = Number(document.getElementById("own2").getElementsByTagName("td")[9].firstChild.nodeValue)
-                        levels[3] = Number(document.getElementById("own2").getElementsByTagName("td")[13].firstChild.nodeValue)
-                        levels[4] = Number(document.getElementById("own2").getElementsByTagName("td")[17].firstChild.nodeValue)
+                        const levelValues = getElementsByXPath('//section/table/tbody/tr/td[2]');
+
+                        for (const levelValue of levelValues) {
+                            levels.push(levelValue.textContent);
+                        }
 
                         let opponentIndex;
 
@@ -1068,7 +1101,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
                 }
             };
 
-            setTimeout(function(){
+            setTimeout(function () {
                 goArena();
             }, clickDelay + 600);
 
@@ -1085,17 +1118,17 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
                 if (!inArenaPage) {
                     document.getElementsByClassName("cooldown_bar_link")[3].click();
                 } else {
-                    const inCircusProvPage = document.getElementsByTagName("td")[3].firstChild.hasClass("awesome-tabs current");
+                    const inCircusProvPage = document.querySelector("#mainnav > li > table > tbody > tr > td:nth-child(4) > a")
 
                     if (!inCircusProvPage) {
                         document.getElementsByTagName("td")[3].firstElementChild.click();
                     } else {
                         const levels = new Array();
-                        levels[0] = Number(document.getElementById("own3").getElementsByTagName("td")[1].firstChild.nodeValue)
-                        levels[1] = Number(document.getElementById("own3").getElementsByTagName("td")[5].firstChild.nodeValue)
-                        levels[2] = Number(document.getElementById("own3").getElementsByTagName("td")[9].firstChild.nodeValue)
-                        levels[3] = Number(document.getElementById("own3").getElementsByTagName("td")[13].firstChild.nodeValue)
-                        levels[4] = Number(document.getElementById("own3").getElementsByTagName("td")[17].firstChild.nodeValue)
+                        const levelValues = getElementsByXPath('//section/table/tbody/tr/td[2]');
+
+                        for (const levelValue of levelValues) {
+                            levels.push(levelValue.textContent);
+                        }
 
                         let opponentIndex;
 
@@ -1112,7 +1145,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
                 };
             };
 
-            setTimeout(function(){
+            setTimeout(function () {
                 goCircus();
             }, clickDelay + 600);
 
@@ -1122,7 +1155,12 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
         *  Go Event Expedition  *
         ************************/
 
-        else if (doEventExpedition === true && nextEventExpeditionTime < currentTime && eventPoints > 0) {
+        else if (doEventExpedition === true && nextEventExpeditionTime < currentTime) {
+
+            if (player.hp < healthTreshold) {
+                autoHealth();
+            }
+
             function goEventExpedition() {
                 const inEventExpeditionPage = document.getElementById("submenu2").getElementsByClassName("menuitem active glow")[0];
 
@@ -1130,7 +1168,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
                     document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
                 } else {
                     eventPoints = document.getElementById("content").getElementsByClassName("section-header")[0].getElementsByTagName("p")[1].firstChild.nodeValue.replace(/[^0-9]/gi, '')
-                    localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints, date: currentDate}));
+                    localStorage.setItem('eventPoints', JSON.stringify({ count: eventPoints, date: currentDate }));
 
                     const isTimer = $('#content .ticker').first()
 
@@ -1142,14 +1180,14 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
                     } else if (eventPoints == 0) {
                         location.reload();
                     } else if (eventPoints == 1 && eventMonsterId == 3) {
-                        localStorage.setItem('eventPoints', JSON.stringify({count: 0, date: currentDate}));
+                        localStorage.setItem('eventPoints', JSON.stringify({ count: 0, date: currentDate }));
 
                         document.getElementsByClassName("expedition_button")[2].click();
                     } else {
                         if (eventMonsterId == 3) {
-                            localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints - 2, date: currentDate}));
+                            localStorage.setItem('eventPoints', JSON.stringify({ count: eventPoints - 2, date: currentDate }));
                         } else {
-                            localStorage.setItem('eventPoints', JSON.stringify({count: eventPoints - 1, date: currentDate}));
+                            localStorage.setItem('eventPoints', JSON.stringify({ count: eventPoints - 1, date: currentDate }));
                         }
 
                         nextEventExpeditionTime = currentTime + 303000;
@@ -1160,7 +1198,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
                 }
             };
 
-            setTimeout(function(){
+            setTimeout(function () {
                 goEventExpedition();
             }, clickDelay);
 
@@ -1298,7 +1336,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
 
                 let nextActionCounter;
 
-                nextActionCounter = setInterval(function() {
+                nextActionCounter = setInterval(function () {
                     nextAction.time = nextAction.time - 1000;
 
                     nextActionWindow.innerHTML = `
@@ -1312,7 +1350,7 @@ const cssUrl = "https://raw.githubusercontent.com/LucasBares/gladiatus-script/ma
                             document.getElementById("submenu2").getElementsByClassName("menuitem glow")[0].click();
                         }
                         else {
-                            setTimeout(function(){
+                            setTimeout(function () {
                                 document.getElementsByClassName("cooldown_bar_link")[nextAction.index].click();
                             }, clickDelay);
                         };
