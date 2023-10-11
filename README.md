@@ -31,7 +31,7 @@ Usage:
 2. Press Auto GO
 3. Enjoy
 
-![N|Solid](https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/preview.jpg)
+![N|Solid](https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/preview.png)
 
 To do:
 ---------
