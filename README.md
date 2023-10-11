@@ -7,6 +7,7 @@
   - Auto circus turma provinciarum
   - Auto quests in pantheon
   - Auto event expeditions
+  - Auto health (needs [Gladiatus Crazy Addon](https://gladiatus.dinodevs.com/) )
   
 * Settings
   - Turn on/off every activity
@@ -14,7 +15,8 @@
   - Choose an dungeon difficulty
   - Set arena and circus opponent level
   - Choose quests types 
-  - Set language (English/Polish)
+  - Set language (English/Polish/Spanish)
+  - Set health threshold/inventory health tab
   
 Installation:
 ---------
@@ -29,14 +31,12 @@ Usage:
 2. Press Auto GO
 3. Enjoy
 
-
 ![N|Solid](https://raw.githubusercontent.com/ebodziony/gladiatus-script/master/assets/preview.jpg)
 
 To do:
 ---------
-  - Using food
   - Auto gold spending in auction house.
-  - Auto trening
+  - Auto training
 
 Bugs:
 ---------
