@@ -177,9 +177,6 @@ const cssUrl = "https://raw.githubusercontent.com/Taeko-ar/gladiatus-script/mast
     };
 
     setTimeout(() => {
-        console.log(localStorage.getItem('foodTab'), document.querySelector("#set_food_tab"), foodTab)
-        console.log(localStorage.getItem('healthTreshold'), document.querySelector("#set_health_treshold"))
-
         if (document.querySelector("#set_food_tab")) document.querySelector("#set_food_tab").value = localStorage.getItem('foodTab')
         if (document.querySelector("#set_health_treshold")) document.querySelector("#set_health_treshold").value = localStorage.getItem('healthTreshold')
     }, 100)
@@ -650,7 +647,6 @@ const cssUrl = "https://raw.githubusercontent.com/Taeko-ar/gladiatus-script/mast
 
         function setFoodTab(tab) {
             foodTab = Number(tab);
-            console.log({ tab })
             localStorage.setItem('foodTab', tab);
             reloadSettings();
         }
@@ -670,14 +666,12 @@ const cssUrl = "https://raw.githubusercontent.com/Taeko-ar/gladiatus-script/mast
                 if (value > max) {
                     e.target.value = e.target.max;
                 }
-                console.log(e.target.value)
                 setHealthTreshold(e.target.value);
             }, 500);
         });
 
 
         document.querySelector('#set_food_tab').addEventListener('change', (e) => {
-            console.log(e.target.value)
             setFoodTab(e.target.value);
         });
 
@@ -1012,10 +1006,8 @@ const cssUrl = "https://raw.githubusercontent.com/Taeko-ar/gladiatus-script/mast
                 } else {
 
                     if (document.getElementsByClassName("disabled")) {
-                        console.log("Disabled");
                         location.reload();
                     }
-                    console.log("Not disabled");
                     document.getElementsByClassName("expedition_button")[monsterId].click();
                 };
             };
