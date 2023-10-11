@@ -21,12 +21,8 @@ const cssUrl = "https://raw.githubusercontent.com/Taeko-ar/gladiatus-script/mast
     // Add CSS
 
     function addCustomCSS() {
-        const getStyle = async () => {
-            const res = await fetch(cssUrl)
-            const css = await res.text()
-            GM_addStyle(css);
-        }
-        getStyle();
+        const globalCSS = GM_getResourceText("customCSS_global");
+        GM_addStyle(globalCSS);
     };
 
     addCustomCSS();
