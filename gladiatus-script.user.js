@@ -823,7 +823,7 @@
                 const bestFood = document.querySelector("[style*='filter: drop-shadow(black 0px 0px 1px) drop-shadow(yellow 0px 0px 3px) drop-shadow(yellow 0px 0px 3px)']");
                 const nearFood = document.querySelector("#inv .ui-draggable-handle");
 
-                if (!bestFood || !nearFood) {
+                if (!bestFood && !nearFood) {
                     localStorage.setItem('doArena', false);
                     /*
                         You can use pots here too
